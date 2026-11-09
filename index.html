@@ -102,7 +102,6 @@ button.rand{flex:1;appearance:none;border:1.5px solid var(--accent);background:v
 .errchips button.on{border-color:var(--red);color:var(--red);background:var(--red-soft)}
 .errchips .errlog{font-weight:700;color:var(--red)}
 .signnote{background:var(--amber-soft);color:var(--amber);border-radius:10px;padding:10px 14px;margin-top:10px;font-weight:600;font-size:15px}
-.appx{font-size:13.5px;color:var(--ink2);margin-top:8px}
 </style>
 </head>
 <body>
@@ -110,13 +109,6 @@ button.rand{flex:1;appearance:none;border:1.5px solid var(--accent);background:v
   <div class="intro">
     <h1>电工电子陪练 V2</h1>
     <p>紧扣老师勾的作业题（1、2、3、7、8 章）：每个陪练器先选方法，选对才解锁计算；填数后逐步推导不跳步，并给出数量级、符号、回代三项检查；练完点「换一组数再练」用同样的图再算一遍。公式为 plain text，数值保留 3 位有效数字，图由计算结果生成、每图独立成框、电压与电流各自比例尺。</p>
-  </div>
-
-  <div class="card" id="share-card">
-    <h2>把这一页发给同伴</h2>
-    <p class="sub">点下面的按钮，会把整页下载成一个 .html 文件。再把这个文件通过微信 / QQ / 邮箱发给同伴就行。对方收到后，先把文件保存到手机或电脑本地，再用浏览器（Chrome、Edge、Safari 等）打开，就能正常选方法、填数、计算。注意：在微信 / QQ 里直接点开文件通常只是预览、不能交互，一定要让对方「保存后用浏览器打开」。这一页是完整单文件，不用联网也能用。</p>
-    <div class="btnrow"><button class="calc" id="dl-page" type="button">下载本页 HTML 文件</button></div>
-    <p class="appx" id="dl-note" role="status"></p>
   </div>
 
   <nav class="tabs" role="tablist" aria-label="章节模块">
@@ -2218,30 +2210,6 @@ TRAIN.rand.t319=function(){
   var um=gvRaw("t319-Um"); if(!isNaN(um)) setV("t319-Um",nice3(rScale(um,0.8,1.2)));
   TRAIN.calc.t319();
 };
-</script>
-<script>
-document.getElementById("dl-page").addEventListener("click",function(){
-  var clone=document.documentElement.cloneNode(true);
-  var outs=clone.querySelectorAll(".out");
-  for(var i=0;i<outs.length;i++){ outs[i].innerHTML=""; outs[i].classList.remove("on"); }
-  var fs=clone.querySelectorAll("fieldset.work");
-  for(var j=0;j<fs.length;j++){ fs[j].setAttribute("disabled",""); }
-  var gates=clone.querySelectorAll(".gate");
-  for(var g=0;g<gates.length;g++){ gates[g].classList.remove("passed"); }
-  var fbs=clone.querySelectorAll(".gatefb");
-  for(var f=0;f<fbs.length;f++){ fbs[f].textContent=""; fbs[f].classList.remove("on","ok","bad"); }
-  var note=clone.querySelector("#dl-note"); if(note) note.textContent="";
-  var html="<!doctype html>\n"+clone.outerHTML;
-  var blob=new Blob([html],{type:"text/html;charset=utf-8"});
-  var a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="电工电子陪练.html";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(function(){ URL.revokeObjectURL(a.href); },4000);
-  document.getElementById("dl-note").textContent="已生成文件「电工电子陪练.html」：把它发给同伴，并提醒对方先保存到本地、再用浏览器打开，不要在微信 / QQ 里直接点开预览。";
-});
 </script>
 </body>
 </html>
