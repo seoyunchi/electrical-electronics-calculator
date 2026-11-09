@@ -1,0 +1,2247 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>电工电子计算</title>
+<style>
+:root{
+  --bg:#f4f6f5; --card:#ffffff; --ink:#16211d; --ink2:#4a5a54; --line:#d8e0dc;
+  --accent:#0b6e5d; --accent-ink:#ffffff; --accent-soft:#e2f0ec;
+  --amber:#b45309; --amber-soft:#fdf0dd; --red:#b3261e; --red-soft:#fbe7e5;
+  --blue:#1d4ed8; --orange:#c2410c; --violet:#7c3aed;
+  --mono:"SFMono-Regular",Consolas,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#101613; --card:#1a211e; --ink:#e8efec; --ink2:#a9bab3; --line:#33413b;
+    --accent:#2ea88f; --accent-soft:#17352e; --amber:#e8a04c; --amber-soft:#3a2c17;
+    --red:#f08a84; --red-soft:#3d2220; --blue:#7aa5f8; --orange:#f0935c; --violet:#b79af5; }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  font-size:17px;line-height:1.55;-webkit-text-size-adjust:100%}
+main{max-width:860px;margin:0 auto;padding:14px 14px 48px}
+.intro{padding:6px 2px 12px}
+.intro h1{font-size:24px;margin:0 0 4px;letter-spacing:.5px}
+.intro p{margin:0;color:var(--ink2);font-size:15px}
+.tabs{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+  background:var(--bg);padding:8px 0 10px}
+.tab{appearance:none;border:1.5px solid var(--line);background:var(--card);color:var(--ink);
+  border-radius:10px;padding:11px 2px;font-size:15.5px;font-weight:700;cursor:pointer;line-height:1.25}
+.tab small{display:block;font-weight:400;font-size:11.5px;color:var(--ink2);margin-top:1px}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tab[aria-selected="true"] small{color:var(--accent-ink);opacity:.85}
+.panel{display:none}.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 14px;margin:0 0 16px}
+.card h2{font-size:19px;margin:0 0 2px}
+.card .sub{color:var(--ink2);font-size:14px;margin:0 0 12px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fgrid>.field{min-width:0}
+@media (max-width:600px){.fgrid{grid-template-columns:1fr}}
+.field label{display:block;font-size:14.5px;font-weight:600;margin-bottom:4px}
+.field label .sym{font-family:var(--mono);font-weight:700}
+.inrow{display:flex;gap:6px}
+.inrow input{flex:1;min-width:0;width:100%;font-size:19px;padding:11px 10px;border:1.5px solid var(--line);
+  border-radius:9px;background:var(--card);color:var(--ink);font-family:var(--mono)}
+.inrow select{font-size:15px;padding:0 6px;border:1.5px solid var(--line);border-radius:9px;
+  background:var(--card);color:var(--ink);max-width:86px}
+.inrow input:focus,.inrow select:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
+.field.wide{grid-column:1/-1}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.seg button{flex:1;min-width:100px;appearance:none;border:1.5px solid var(--line);background:var(--card);
+  color:var(--ink);border-radius:9px;padding:10px 6px;font-size:15px;font-weight:600;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.btnrow{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+button.calc{flex:2;appearance:none;border:none;background:var(--accent);color:var(--accent-ink);
+  font-size:17px;font-weight:700;padding:13px 10px;border-radius:10px;cursor:pointer}
+button.ex{flex:1;appearance:none;border:1.5px solid var(--amber);background:var(--amber-soft);color:var(--amber);
+  font-size:15px;font-weight:700;padding:13px 8px;border-radius:10px;cursor:pointer}
+button.copy{appearance:none;border:1.5px solid var(--line);background:var(--card);color:var(--ink2);
+  font-size:14px;font-weight:600;padding:9px 14px;border-radius:9px;cursor:pointer}
+.out{display:none;margin-top:14px}
+.out.on{display:block}
+.res{background:var(--accent-soft);border-radius:10px;padding:12px 14px;font-size:17px}
+.res .rrow{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dashed var(--line)}
+.res .rrow:last-child{border-bottom:none}
+.res .rk{color:var(--ink2);font-size:15px}
+.res .rv{font-family:var(--mono);font-weight:700;text-align:right}
+.warn{background:var(--red-soft);color:var(--red);border-radius:10px;padding:10px 14px;margin-top:10px;font-weight:700;font-size:15.5px}
+.oknote{background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:10px 14px;margin-top:10px;font-weight:600;font-size:15px}
+.steps{margin-top:12px}
+.steps h3,.figbox h3{font-size:15px;margin:0 0 6px;color:var(--ink2)}
+.steps pre{margin:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;
+  padding:12px;font-family:var(--mono);font-size:14.5px;line-height:1.7;white-space:pre-wrap;word-break:break-word;color:var(--ink)}
+.figbox{margin-top:14px}
+.figbox svg{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:10px}
+.figcap{font-size:13.5px;color:var(--ink2);margin-top:5px}
+.copied{font-size:13.5px;color:var(--accent);margin-left:8px}
+.foot{color:var(--ink2);font-size:13.5px;text-align:center;padding:8px 20px 0}
+svg text{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+/* ---- V2 陪练组件 ---- */
+.gate{border:1.5px dashed var(--amber);background:var(--amber-soft);border-radius:10px;padding:10px 12px;margin:0 0 12px}
+.gate.passed{border:1.5px solid var(--accent);background:var(--accent-soft)}
+.gateq{font-weight:700;margin:0 0 6px;font-size:15px}
+.opt{display:block;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin:6px 0;background:var(--card);cursor:pointer;font-size:14.5px;line-height:1.45}
+.opt input{margin-right:8px}
+.gatefb{margin:8px 0 0;font-size:14.5px;display:none;line-height:1.5}
+.gatefb.on{display:block}
+.gatefb.bad{color:var(--red);font-weight:600}
+.gatefb.ok{color:var(--accent);font-weight:600}
+fieldset.work{border:none;margin:0;padding:0;min-width:0}
+fieldset.work[disabled]{opacity:.4}
+button.rand{flex:1;appearance:none;border:1.5px solid var(--accent);background:var(--accent-soft);color:var(--accent);font-size:15px;font-weight:700;padding:13px 8px;border-radius:10px;cursor:pointer}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:6px;font-size:13.5px;color:var(--ink2)}
+.legend .sw{display:inline-block;width:16px;height:4px;border-radius:2px;vertical-align:middle;margin-right:5px;background:currentColor}
+.errchips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:12px;font-size:13.5px;color:var(--ink2)}
+.errchips .elb{font-weight:600}
+.errchips button{appearance:none;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:13.5px;cursor:pointer}
+.errchips button.on{border-color:var(--red);color:var(--red);background:var(--red-soft)}
+.errchips .errlog{font-weight:700;color:var(--red)}
+.signnote{background:var(--amber-soft);color:var(--amber);border-radius:10px;padding:10px 14px;margin-top:10px;font-weight:600;font-size:15px}
+.appx{font-size:13.5px;color:var(--ink2);margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+  <div class="intro">
+    <h1>电工电子陪练 V2</h1>
+    <p>紧扣老师勾的作业题（1、2、3、7、8 章）：每个陪练器先选方法，选对才解锁计算；填数后逐步推导不跳步，并给出数量级、符号、回代三项检查；练完点「换一组数再练」用同样的图再算一遍。公式为 plain text，数值保留 3 位有效数字，图由计算结果生成、每图独立成框、电压与电流各自比例尺。</p>
+  </div>
+
+  <div class="card" id="share-card">
+    <h2>把这一页发给同伴</h2>
+    <p class="sub">点下面的按钮，会把整页下载成一个 .html 文件。再把这个文件通过微信 / QQ / 邮箱发给同伴就行。对方收到后，先把文件保存到手机或电脑本地，再用浏览器（Chrome、Edge、Safari 等）打开，就能正常选方法、填数、计算。注意：在微信 / QQ 里直接点开文件通常只是预览、不能交互，一定要让对方「保存后用浏览器打开」。这一页是完整单文件，不用联网也能用。</p>
+    <div class="btnrow"><button class="calc" id="dl-page" type="button">下载本页 HTML 文件</button></div>
+    <p class="appx" id="dl-note" role="status"></p>
+  </div>
+
+  <nav class="tabs" role="tablist" aria-label="章节模块">
+    <button class="tab" role="tab" aria-selected="true" data-show="panel-dc">直流<small>第 1 章</small></button>
+    <button class="tab" role="tab" aria-selected="false" data-show="panel-thm">电路定理<small>第 2 章</small></button>
+    <button class="tab" role="tab" aria-selected="false" data-show="panel-ph panel-rlc">交流<small>第 3 章</small></button>
+    <button class="tab" role="tab" aria-selected="false" data-show="panel-semi">半导体<small>第 7、8 章</small></button>
+  </nav>
+
+  <!-- ============ 模块一：直流 ============ -->
+  <section class="panel on" id="panel-dc">
+
+    <div class="card" id="t-11">
+      <h2>习题 1.1 · 元件功率与参考方向</h2>
+      <p class="sub">图 1-20 的 5 个元件，电压、电流均为关联参考方向，数值带符号直接代入 P = U * I（数据已按练习本解法核对：U = 140、-90、60、-80、30 V，I = -4、6、10、-4、6 A）。P 为正 = 吸收功率（负载）；P 为负 = 实际发出功率（电源）。最后验算功率平衡：发出合计 560 + 540 = 1100 W，吸收合计 600 + 320 + 180 = 1100 W，两边相等，符合能量守恒。关联参考方向（电流从电压正极流入）时吸收功率 P = U * I；非关联时吸收功率 P = -U * I，本题 5 个元件都是关联方向。</p>
+      <div class="gate" data-gate="t11">
+        <p class="gateq">第一步 · 先选方法（选对了才解锁计算）</p>
+        <label class="opt"><input type="radio" name="g-t11" value="w1" data-why="不对。这题不解支路电流：每个元件的 U、I 都给了，只需要按参考方向逐个算功率。支路电流法是列方程解未知电流的，这里用不上。">支路电流法：列 KCL、KVL 方程组解出每个元件的电流</label>
+        <label class="opt"><input type="radio" name="g-t11" value="ok" data-ok="1" data-why="选对了。方法：逐个元件先看参考方向是否关联，再套 P = U * I 判读正负（负 = 实际发出），最后用功率平衡（总吸收 = 0）验算整表。">功率公式 + 参考方向判读：关联 P = U * I、非关联 P = -U * I，负值即实际发出</label>
+        <label class="opt"><input type="radio" name="g-t11" value="w2" data-why="不对。KVL 管的是一个回路里电压的代数和，与单个元件吸收还是发出功率无关；判断吸收/发出只能用功率公式加参考方向。">KVL：沿回路把各元件电压加起来看是否为零</label>
+        <p class="gatefb" role="status"></p>
+      </div>
+      <fieldset class="work" id="w-t11" disabled>
+      <div class="fgrid">
+        <div class="field"><label>元件 1 电压 <span class="sym">U1</span>（V，可负）</label><div class="inrow"><input id="t11-U1" type="number" step="any" inputmode="decimal"><select id="t11-C1"><option value="1">关联方向</option><option value="-1">非关联方向</option></select></div></div>
+        <div class="field"><label>元件 1 电流 <span class="sym">I1</span>（A）</label><div class="inrow"><input id="t11-I1" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label>元件 2 电压 <span class="sym">U2</span>（V，可负）</label><div class="inrow"><input id="t11-U2" type="number" step="any" inputmode="decimal"><select id="t11-C2"><option value="1">关联方向</option><option value="-1">非关联方向</option></select></div></div>
+        <div class="field"><label>元件 2 电流 <span class="sym">I2</span>（A）</label><div class="inrow"><input id="t11-I2" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label>元件 3 电压 <span class="sym">U3</span>（V，可负）</label><div class="inrow"><input id="t11-U3" type="number" step="any" inputmode="decimal"><select id="t11-C3"><option value="1">关联方向</option><option value="-1">非关联方向</option></select></div></div>
+        <div class="field"><label>元件 3 电流 <span class="sym">I3</span>（A）</label><div class="inrow"><input id="t11-I3" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label>元件 4 电压 <span class="sym">U4</span>（V，可负）</label><div class="inrow"><input id="t11-U4" type="number" step="any" inputmode="decimal"><select id="t11-C4"><option value="1">关联方向</option><option value="-1">非关联方向</option></select></div></div>
+        <div class="field"><label>元件 4 电流 <span class="sym">I4</span>（A）</label><div class="inrow"><input id="t11-I4" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label>元件 5 电压 <span class="sym">U5</span>（V，可负）</label><div class="inrow"><input id="t11-U5" type="number" step="any" inputmode="decimal"><select id="t11-C5"><option value="1">关联方向</option><option value="-1">非关联方向</option></select></div></div>
+        <div class="field"><label>元件 5 电流 <span class="sym">I5</span>（A）</label><div class="inrow"><input id="t11-I5" type="number" step="any" inputmode="decimal"></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-preset="t11">课本原题预设并计算</button><button class="rand" data-rand="t11">换一组数再练</button><button class="calc" data-tcalc="t11">计算</button></div>
+      <div class="out" id="t11-out"></div>
+      <div class="errchips" data-errbox="t11"><span class="elb">错因记录（仅本次使用）：</span><button type="button" data-err="方法选错">方法选错</button><button type="button" data-err="符号错">符号错</button><button type="button" data-err="单位错">单位错</button><button type="button" data-err="复数错">复数错</button><span class="errlog"></span></div>
+      </fieldset>
+    </div>
+
+    <div class="card" id="t-13">
+      <h2>习题 1.3 · 指示灯串联降压电阻</h2>
+      <p class="sub">额定 110 V、8 W 的指示灯要接在 380 V 电源上，必须串联一个电阻分掉多出的电压。先由额定值求灯丝电阻 R = Un * Un / Pn 和额定电流 I = Pn / Un，再求串联电阻，最后按 I * I * R 选电阻的额定功率（向上取标准规格）。</p>
+      <div class="gate" data-gate="t13">
+        <p class="gateq">第一步 · 先选方法（选对了才解锁计算）</p>
+        <label class="opt"><input type="radio" name="g-t13" value="w1" data-why="不对。并联只能分流、不能降压：灯泡两端仍然是 380 V，照样烧坏。要让灯泡只分到 110 V，必须串联分压。">给灯泡并联一个电阻，把多余电流分走</label>
+        <label class="opt"><input type="radio" name="g-t13" value="ok" data-ok="1" data-why="选对了。串联电阻分掉 (电源电压 - 额定电压)，阻值 = 多出电压 / 额定电流；再用 I * I * R 算电阻实际功率，选型向上取标准瓦数。">串联分压：先由额定值求灯丝电阻与额定电流，再算串联电阻及其功率</label>
+        <label class="opt"><input type="radio" name="g-t13" value="w2" data-why="不对。灯丝电阻由额定工作状态决定，只能用 110 V、8 W 算；拿 380 V 去算电阻，电流和分压全会错。">直接用 380 V 和 8 W 算灯丝电阻，再求电流</label>
+        <p class="gatefb" role="status"></p>
+      </div>
+      <fieldset class="work" id="w-t13" disabled>
+      <div class="fgrid">
+        <div class="field"><label>灯泡额定电压 <span class="sym">Un</span></label><div class="inrow"><input id="t13-Un" type="number" step="any" inputmode="decimal"><select id="t13-Un-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>灯泡额定功率 <span class="sym">Pn</span></label><div class="inrow"><input id="t13-Pn" type="number" step="any" inputmode="decimal"><select id="t13-Pn-u"><option value="1">W</option><option value="0.001">mW</option></select></div></div>
+        <div class="field"><label>电源电压 <span class="sym">Us</span></label><div class="inrow"><input id="t13-Us" type="number" step="any" inputmode="decimal"><select id="t13-Us-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-preset="t13">课本原题预设并计算</button><button class="rand" data-rand="t13">换一组数再练</button><button class="calc" data-tcalc="t13">计算</button></div>
+      <div class="out" id="t13-out"></div>
+      <div class="errchips" data-errbox="t13"><span class="elb">错因记录（仅本次使用）：</span><button type="button" data-err="方法选错">方法选错</button><button type="button" data-err="符号错">符号错</button><button type="button" data-err="单位错">单位错</button><button type="button" data-err="复数错">复数错</button><span class="errlog"></span></div>
+      </fieldset>
+    </div>
+
+    <div class="card" id="t-16">
+      <h2>习题 1.6 · KCL 节点电流</h2>
+      <p class="sub">图 1-23 是两个相连的节点 A、B：支路电流 I4 从 A 流向 B。先在节点 A 用 KCL 求 I4，再把 I4 当作流入 B 的已知电流，在节点 B 求 I5。KCL：任一节点，流入电流之和 = 流出电流之和；未知电流按它自己的参考方向求解，算出负值表示实际方向与参考方向相反。</p>
+      <div class="gate" data-gate="t16">
+        <p class="gateq">第一步 · 先选方法（选对了才解锁计算）</p>
+        <label class="opt"><input type="radio" name="g-t16" value="w1" data-why="不对。欧姆定律需要每条支路的电压和电阻，这题直接给的是电流，求未知电流靠的是节点电流代数和为零，不需要电阻。">欧姆定律：逐条支路用 U / R 算电流再相加</label>
+        <label class="opt"><input type="radio" name="g-t16" value="ok" data-ok="1" data-why="选对了。每个节点列一条 KCL：未知电流（按参考方向）= 已知流入合计 - 已知流出合计；A 点求出的 I4 就是 B 点的一条流入电流。">KCL：节点流入之和 = 流出之和，逐节点求未知电流</label>
+        <label class="opt"><input type="radio" name="g-t16" value="w2" data-why="不对。叠加定理是多电源线性电路逐个电源单独作用再叠加，这里没有要拆的电源，只是一个节点方程的问题。">叠加定理：每个电源单独作用，再把电流分量相加</label>
+        <p class="gatefb" role="status"></p>
+      </div>
+      <fieldset class="work" id="w-t16" disabled>
+      <div class="fgrid">
+        <div class="field"><label>节点 A · 已知电流 <span class="sym">a1</span>（A）</label><div class="inrow"><input id="t16-a1" type="number" step="any" inputmode="decimal"><select id="t16-a1d"><option value="in">流入 A</option><option value="out">流出 A</option></select></div></div>
+        <div class="field"><label>节点 A · 已知电流 <span class="sym">a2</span>（A）</label><div class="inrow"><input id="t16-a2" type="number" step="any" inputmode="decimal"><select id="t16-a2d"><option value="in">流入 A</option><option value="out">流出 A</option></select></div></div>
+        <div class="field"><label>节点 A · 已知电流 <span class="sym">a3</span>（A）</label><div class="inrow"><input id="t16-a3" type="number" step="any" inputmode="decimal"><select id="t16-a3d"><option value="in">流入 A</option><option value="out">流出 A</option></select></div></div>
+        <div class="field"><label>未知电流 <span class="sym">I4</span> 的参考方向（A → B）</label><div class="inrow"><select id="t16-i4d" style="max-width:none;flex:1"><option value="out">流出 A（流向 B）</option><option value="in">流入 A（由 B 来）</option></select></div></div>
+        <div class="field"><label>节点 B · 已知电流 <span class="sym">b1</span>（A，I4 之外）</label><div class="inrow"><input id="t16-b1" type="number" step="any" inputmode="decimal"><select id="t16-b1d"><option value="in">流入 B</option><option value="out">流出 B</option></select></div></div>
+        <div class="field"><label>节点 B · 已知电流 <span class="sym">b2</span>（A，I4 之外）</label><div class="inrow"><input id="t16-b2" type="number" step="any" inputmode="decimal"><select id="t16-b2d"><option value="in">流入 B</option><option value="out">流出 B</option></select></div></div>
+        <div class="field"><label>未知电流 <span class="sym">I5</span> 的参考方向</label><div class="inrow"><select id="t16-i5d" style="max-width:none;flex:1"><option value="out">流出 B</option><option value="in">流入 B</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-preset="t16">课本原题预设并计算</button><button class="rand" data-rand="t16">换一组数再练</button><button class="calc" data-tcalc="t16">计算</button></div>
+      <div class="out" id="t16-out"></div>
+      <div class="errchips" data-errbox="t16"><span class="elb">错因记录（仅本次使用）：</span><button type="button" data-err="方法选错">方法选错</button><button type="button" data-err="符号错">符号错</button><button type="button" data-err="单位错">单位错</button><button type="button" data-err="复数错">复数错</button><span class="errlog"></span></div>
+      </fieldset>
+    </div>
+
+    <div class="card" id="t-17">
+      <h2>习题 1.7 · 开路电压 U4</h2>
+      <p class="sub">图 1-24，1、2 端开路。本程序按图中的参考极性计算：U1 与 U2 在闭合回路中反向串联，回路电流 I = (U1 - U2) / (R1 + R2)；开路端口的那条路径经过 R2 支路与电压源 U3，故 U4 = I * R2 + U3；R3 在开路支路中，电流为零、压降为零（这是本题的陷阱）。请拿课堂笔记核对极性是否与此一致。</p>
+      <div class="gate" data-gate="t17">
+        <p class="gateq">第一步 · 先选方法（选对了才解锁计算）</p>
+        <label class="opt"><input type="radio" name="g-t17" value="w1" data-why="不对。1、2 端开路，含 R3 的支路电流恒为零，R3 上没有压降可算。先想电流通路：哪条支路真的有电流？">先求 R3 上的电流，再算它的压降加到 U4 里</label>
+        <label class="opt"><input type="radio" name="g-t17" value="ok" data-ok="1" data-why="选对了。开路支路电流为零（R3 压降为零），先求闭合回路电流，再沿开路端口的路径用 KVL 把电压源和电阻压降按极性相加。">先求闭合回路电流，再沿开路端口路径用 KVL 求 U4（开路支路电流为零）</label>
+        <label class="opt"><input type="radio" name="g-t17" value="w2" data-why="不对。R3 在开路支路里，根本不在闭合回路中，把它串进总电阻会把回路电流算小，U4 也跟着错。">把 R1、R2、R3 全串联成总电阻，先求总电流</label>
+        <p class="gatefb" role="status"></p>
+      </div>
+      <fieldset class="work" id="w-t17" disabled>
+      <div class="fgrid">
+        <div class="field"><label>电压源 <span class="sym">U1</span></label><div class="inrow"><input id="t17-U1" type="number" step="any" inputmode="decimal"><select id="t17-U1-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>电压源 <span class="sym">U2</span>（回路中与 U1 反向）</label><div class="inrow"><input id="t17-U2" type="number" step="any" inputmode="decimal"><select id="t17-U2-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>电压源 <span class="sym">U3</span>（端口路径上）</label><div class="inrow"><input id="t17-U3" type="number" step="any" inputmode="decimal"><select id="t17-U3-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>电阻 <span class="sym">R1</span>（回路）</label><div class="inrow"><input id="t17-R1" type="number" step="any" inputmode="decimal"><select id="t17-R1-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+        <div class="field"><label>电阻 <span class="sym">R2</span>（回路兼端口路径）</label><div class="inrow"><input id="t17-R2" type="number" step="any" inputmode="decimal"><select id="t17-R2-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+        <div class="field"><label>电阻 <span class="sym">R3</span>（开路支路）</label><div class="inrow"><input id="t17-R3" type="number" step="any" inputmode="decimal"><select id="t17-R3-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-preset="t17">课本原题预设并计算</button><button class="rand" data-rand="t17">换一组数再练</button><button class="calc" data-tcalc="t17">计算</button></div>
+      <div class="out" id="t17-out"></div>
+      <div class="errchips" data-errbox="t17"><span class="elb">错因记录（仅本次使用）：</span><button type="button" data-err="方法选错">方法选错</button><button type="button" data-err="符号错">符号错</button><button type="button" data-err="单位错">单位错</button><button type="button" data-err="复数错">复数错</button><span class="errlog"></span></div>
+      </fieldset>
+    </div>
+
+    <div class="card" id="t-112">
+      <h2>习题 1.12 · 节点电位 VA</h2>
+      <p class="sub">图 1-29：节点 A 经 Ra 接电源 E1、经 Rb 接电源 E2、经 Rc 接地（参考点 0 V），求 A 点电位。E2 按图示极性填带符号的值：+50 V 电源经 10 Ω、-50 V 电源（正极朝下）经 5 Ω、中间 20 Ω 接地时，E1 填 50、E2 填 -50。</p>
+      <div class="gate" data-gate="t112">
+        <p class="gateq">第一步 · 先选方法（选对了才解锁计算）</p>
+        <label class="opt"><input type="radio" name="g-t112" value="w1" data-why="不对。单电源分压公式只适用于一个电源对两个串联电阻供电；这里是两个电源共同接到一个节点，分压公式套不上。">分压公式：VA = E * R / (R + R)，对每个电源各算一次再平均</label>
+        <label class="opt"><input type="radio" name="g-t112" value="ok" data-ok="1" data-why="选对了。一个节点、一个未知量：对 A 点列 KCL（流出电流之和为零），(VA - E1) / Ra + (VA - E2) / Rb + VA / Rc = 0，解出 VA。">节点电压法（KCL）：对 A 点列电流方程，一步解出 VA</label>
+        <label class="opt"><input type="radio" name="g-t112" value="w2" data-why="不推荐。叠加定理理论上也能算，但要算两遍再叠加，符号最容易丢；本题一个方程就能解，考试也按节点法给分。">叠加定理：两个电源轮流单独作用，VA 分量相加</label>
+        <p class="gatefb" role="status"></p>
+      </div>
+      <fieldset class="work" id="w-t112" disabled>
+      <div class="fgrid">
+        <div class="field"><label>电源 <span class="sym">E1</span></label><div class="inrow"><input id="t112-E1" type="number" step="any" inputmode="decimal"><select id="t112-E1-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>A 到 E1 的电阻 <span class="sym">Ra</span></label><div class="inrow"><input id="t112-Ra" type="number" step="any" inputmode="decimal"><select id="t112-Ra-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+        <div class="field"><label>电源 <span class="sym">E2</span>（带符号，如 -50）</label><div class="inrow"><input id="t112-E2" type="number" step="any" inputmode="decimal"><select id="t112-E2-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>A 到 E2 的电阻 <span class="sym">Rb</span></label><div class="inrow"><input id="t112-Rb" type="number" step="any" inputmode="decimal"><select id="t112-Rb-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+        <div class="field"><label>A 到地的电阻 <span class="sym">Rc</span></label><div class="inrow"><input id="t112-Rc" type="number" step="any" inputmode="decimal"><select id="t112-Rc-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-preset="t112">课本原题预设并计算</button><button class="rand" data-rand="t112">换一组数再练</button><button class="calc" data-tcalc="t112">计算</button></div>
+      <div class="out" id="t112-out"></div>
+      <div class="errchips" data-errbox="t112"><span class="elb">错因记录（仅本次使用）：</span><button type="button" data-err="方法选错">方法选错</button><button type="button" data-err="符号错">符号错</button><button type="button" data-err="单位错">单位错</button><button type="button" data-err="复数错">复数错</button><span class="errlog"></span></div>
+      </fieldset>
+    </div>
+
+    <div class="card" id="dc-ohm">
+      <h2>基础工具 · 欧姆定律与功率</h2>
+      <p class="sub">U = I * R；P = U * I = I * I * R = U * U / R。三个量填任意两个，留空的那个会被算出来。</p>
+      <div class="fgrid">
+        <div class="field"><label>电压 <span class="sym">U</span></label><div class="inrow"><input id="o-U" type="number" step="any" inputmode="decimal" placeholder="可留空"><select id="o-U-u"><option value="1">V</option><option value="0.001">mV</option><option value="1000">kV</option></select></div></div>
+        <div class="field"><label>电流 <span class="sym">I</span></label><div class="inrow"><input id="o-I" type="number" step="any" inputmode="decimal" placeholder="可留空"><select id="o-I-u"><option value="1">A</option><option value="0.001">mA</option><option value="0.000001">uA</option></select></div></div>
+        <div class="field"><label>电阻 <span class="sym">R</span></label><div class="inrow"><input id="o-R" type="number" step="any" inputmode="decimal" placeholder="可留空"><select id="o-R-u"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-ex="ohmEx">填入例题：U=12V，R=4Ω</button><button class="calc" data-calc="ohm">计算</button></div>
+      <div class="out" id="o-out"></div>
+    </div>
+
+    <div class="card" id="dc-series">
+      <h2>基础工具 · 串联等效与分压</h2>
+      <p class="sub">R = R1 + R2 + R3；电流处处相等；分压 U1 = U * R1 / (R1 + R2 + R3)。图由计算结果生成。</p>
+      <div class="fgrid">
+        <div class="field"><label>总电压 <span class="sym">U</span></label><div class="inrow"><input id="s-U" type="number" step="any" inputmode="decimal"><select id="s-U-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>电阻 <span class="sym">R1</span></label><div class="inrow"><input id="s-R1" type="number" step="any" inputmode="decimal"><select id="s-R1-u"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></div></div>
+        <div class="field"><label>电阻 <span class="sym">R2</span></label><div class="inrow"><input id="s-R2" type="number" step="any" inputmode="decimal"><select id="s-R2-u"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></div></div>
+        <div class="field"><label>电阻 <span class="sym">R3</span>（可留空）</label><div class="inrow"><input id="s-R3" type="number" step="any" inputmode="decimal"><select id="s-R3-u"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-ex="serEx">填入例题：U=24V，10Ω+20Ω+30Ω</button><button class="calc" data-calc="series">计算并画图</button></div>
+      <div class="out" id="s-out"></div>
+    </div>
+
+    <div class="card" id="dc-parallel">
+      <h2>基础工具 · 并联等效与分流</h2>
+      <p class="sub">1 / R = 1 / R1 + 1 / R2 + 1 / R3；各支路电压相等；两支路分流 I1 = I * R2 / (R1 + R2)、I2 = I * R1 / (R1 + R2)（分流与电阻成反比），三支路时各支路电流 = U / 该支路电阻。图由计算结果生成。</p>
+      <div class="fgrid">
+        <div class="field"><label>总电流 <span class="sym">I</span></label><div class="inrow"><input id="p-I" type="number" step="any" inputmode="decimal"><select id="p-I-u"><option value="1">A</option><option value="0.001">mA</option><option value="0.000001">uA</option></select></div></div>
+        <div class="field"><label>电阻 <span class="sym">R1</span></label><div class="inrow"><input id="p-R1" type="number" step="any" inputmode="decimal"><select id="p-R1-u"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></div></div>
+        <div class="field"><label>电阻 <span class="sym">R2</span></label><div class="inrow"><input id="p-R2" type="number" step="any" inputmode="decimal"><select id="p-R2-u"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></div></div>
+        <div class="field"><label>电阻 <span class="sym">R3</span>（可留空）</label><div class="inrow"><input id="p-R3" type="number" step="any" inputmode="decimal"><select id="p-R3-u"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-ex="parEx">填入例题：I=3A，6Ω 与 3Ω 并联</button><button class="calc" data-calc="parallel">计算并画图</button></div>
+      <div class="out" id="p-out"></div>
+    </div>
+
+    <div class="card" id="dc-rated">
+      <h2>基础工具 · 额定功率限流</h2>
+      <p class="sub">电阻额定功率 P 不能超：Imax = 根号(P / R)，Umax = 根号(P * R)。</p>
+      <div class="fgrid">
+        <div class="field"><label>额定功率 <span class="sym">P</span></label><div class="inrow"><input id="r-P" type="number" step="any" inputmode="decimal"><select id="r-P-u"><option value="1">W</option><option value="0.001">mW</option></select></div></div>
+        <div class="field"><label>电阻 <span class="sym">R</span></label><div class="inrow"><input id="r-R" type="number" step="any" inputmode="decimal"><select id="r-R-u"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-ex="ratedEx">填入例题：P=0.25W，R=100Ω</button><button class="calc" data-calc="rated">计算</button></div>
+      <div class="out" id="r-out"></div>
+    </div>
+
+    <div class="card" id="dc-pot">
+      <h2>基础工具 · 电位计算（双电源串联模板）</h2>
+      <p class="sub">模板电路：E1 经 R1、R2 与 E2 串联成回路，中间点为 A，下端接参考点（电位 0）。先求回路电流 I = (E1 - E2) / (R1 + R2)，再由 A 点沿 R2 往下走到参考点求 VA。</p>
+      <div class="fgrid">
+        <div class="field"><label>电源 <span class="sym">E1</span>（上）</label><div class="inrow"><input id="v-E1" type="number" step="any" inputmode="decimal"><select id="v-E1-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>电源 <span class="sym">E2</span>（下）</label><div class="inrow"><input id="v-E2" type="number" step="any" inputmode="decimal"><select id="v-E2-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>电阻 <span class="sym">R1</span>（上段）</label><div class="inrow"><input id="v-R1" type="number" step="any" inputmode="decimal"><select id="v-R1-u"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></div></div>
+        <div class="field"><label>电阻 <span class="sym">R2</span>（下段）</label><div class="inrow"><input id="v-R2" type="number" step="any" inputmode="decimal"><select id="v-R2-u"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-ex="potEx">填入例题：E1=12V，E2=6V，R1=R2=1kΩ</button><button class="calc" data-calc="pot">计算</button></div>
+      <div class="out" id="v-out"></div>
+    </div>
+  </section>
+
+  <!-- ============ V2 新增：第 2 章电路定理 ============ -->
+  <section class="panel" id="panel-thm">
+
+    <div class="card" id="t-21">
+      <h2>习题 2.1 · 开关两种状态的等效电阻 Rab</h2>
+      <p class="sub">图 2-41 桥式网络：上横 Ra、下横 Rd、左竖 Re、上斜 Rb、下斜 Rc，开关 S 在右侧竖边。S 断开时，a 到 b 有三条并联通路：(Ra + Rc)、(Rb + Rd) 和 Re；S 闭合时右侧两节点被短接成同一点，变成 [(Ra // Rb) + (Rc // Rd)] // Re。两种状态分开算——开关改变的是拓扑，不是某个电阻的数值。</p>
+      <div class="gate" data-gate="t21">
+        <p class="gateq">第一步 · 先选方法（选对了才解锁计算）</p>
+        <label class="opt"><input type="radio" name="g-t21" value="w1" data-why="不对。电路里没有电源、没有电流可解，这是纯电阻网络的化简问题，列支路电流方程没有意义。">支路电流法：设各支路电流列方程组求解</label>
+        <label class="opt"><input type="radio" name="g-t21" value="w2" data-why="不对。节点电压法是求节点电位的，求两端等效电阻只需要认清开关两种状态下谁和谁串联、谁和谁并联，逐步合并。">节点电压法：先求 a、b 两点电位再算电阻</label>
+        <label class="opt"><input type="radio" name="g-t21" value="ok" data-ok="1" data-why="选对了。关键只有一步：按开关状态重画连接关系。断开看三条通路，闭合先把右侧短接点合并，再串并联化简。">串并联等效化简：按开关状态重画拓扑，再逐步合并电阻</label>
+        <p class="gatefb" role="status"></p>
+      </div>
+      <fieldset class="work" id="w-t21" disabled>
+      <div class="fgrid">
+        <div class="field"><label>上横电阻 <span class="sym">Ra</span></label><div class="inrow"><input id="t21-Ra" type="number" step="any" inputmode="decimal"><select id="t21-Ra-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+        <div class="field"><label>上斜电阻 <span class="sym">Rb</span></label><div class="inrow"><input id="t21-Rb" type="number" step="any" inputmode="decimal"><select id="t21-Rb-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+        <div class="field"><label>下斜电阻 <span class="sym">Rc</span></label><div class="inrow"><input id="t21-Rc" type="number" step="any" inputmode="decimal"><select id="t21-Rc-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+        <div class="field"><label>下横电阻 <span class="sym">Rd</span></label><div class="inrow"><input id="t21-Rd" type="number" step="any" inputmode="decimal"><select id="t21-Rd-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+        <div class="field"><label>左竖电阻 <span class="sym">Re</span></label><div class="inrow"><input id="t21-Re" type="number" step="any" inputmode="decimal"><select id="t21-Re-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-preset="t21">课本原题预设并计算</button><button class="rand" data-rand="t21">换一组数再练</button><button class="calc" data-tcalc="t21">计算并画图</button></div>
+      <div class="out" id="t21-out"></div>
+      <div class="errchips" data-errbox="t21"><span class="elb">错因记录（仅本次使用）：</span><button type="button" data-err="方法选错">方法选错</button><button type="button" data-err="符号错">符号错</button><button type="button" data-err="单位错">单位错</button><button type="button" data-err="复数错">复数错</button><span class="errlog"></span></div>
+      </fieldset>
+    </div>
+    <div class="card" id="t-27">
+      <h2>习题 2.7 · 电源等效变换求电流 I</h2>
+      <p class="sub">图 2-47 按交流群解法的 (b)(c)(d) 三步走：左边两条支路各是电压源串联电阻（6 V 串 3 Ω、12 V 串 6 Ω），先各变成电流源（2 A 并 3 Ω、2 A 并 6 Ω），合并成一个电流源并一个电阻，再变回电压源，最后与上方串联支路（两只 1 Ω 合并为 2 Ω）、反向 2 V 电源和 2 Ω 负载组成单回路求 I。每一步都写出来，不跳步。</p>
+      <div class="gate" data-gate="t27">
+        <p class="gateq">第一步 · 先选方法（选对了才解锁计算）</p>
+        <label class="opt"><input type="radio" name="g-t27" value="w1" data-why="不对。叠加定理是逐个电源单独作用再相加，本题指定的就是等效变换：电源形式互换、合并同类源，最后化成单回路。方法不对，过程分拿不到。">叠加定理：每个电源单独作用，电流分量相加</label>
+        <label class="opt"><input type="radio" name="g-t27" value="ok" data-ok="1" data-why="选对了。等效变换的规则只有两条：电压源串 R 与电流源并 R 可以互换（Is = Us / R，电阻不变）；同类源可以合并（电流源相加、并联电阻取并联值）。">电源等效变换：电压源串 R ↔ 电流源并 R，逐步合并成单回路</label>
+        <label class="opt"><input type="radio" name="g-t27" value="w2" data-why="不对。节点电压法能算出数值，但题目考的就是等效变换的步骤，跳过变换直接解方程，考试按题要求不得分。">节点电压法：直接列节点方程解出负载电流</label>
+        <p class="gatefb" role="status"></p>
+      </div>
+      <fieldset class="work" id="w-t27" disabled>
+      <div class="fgrid">
+        <div class="field"><label>支路 1 电压源 <span class="sym">Us1</span></label><div class="inrow"><input id="t27-U1" type="number" step="any" inputmode="decimal"><select id="t27-U1-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>支路 1 串联电阻 <span class="sym">Ra</span></label><div class="inrow"><input id="t27-Ra" type="number" step="any" inputmode="decimal"><select id="t27-Ra-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+        <div class="field"><label>支路 2 电压源 <span class="sym">Us2</span></label><div class="inrow"><input id="t27-U2" type="number" step="any" inputmode="decimal"><select id="t27-U2-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>支路 2 串联电阻 <span class="sym">Rb</span></label><div class="inrow"><input id="t27-Rb" type="number" step="any" inputmode="decimal"><select id="t27-Rb-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+        <div class="field"><label>串联支路电阻 <span class="sym">Rser</span>（原图两只 1 Ω 合并）</label><div class="inrow"><input id="t27-Rs" type="number" step="any" inputmode="decimal"><select id="t27-Rs-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+        <div class="field"><label>回路中反向电压源 <span class="sym">Uopp</span></label><div class="inrow"><input id="t27-Uo" type="number" step="any" inputmode="decimal"><select id="t27-Uo-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>负载电阻 <span class="sym">Rload</span>（I 流过它）</label><div class="inrow"><input id="t27-Rl" type="number" step="any" inputmode="decimal"><select id="t27-Rl-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-preset="t27">课本原题预设并计算</button><button class="rand" data-rand="t27">换一组数再练</button><button class="calc" data-tcalc="t27">逐步变换并计算</button></div>
+      <div class="out" id="t27-out"></div>
+      <div class="errchips" data-errbox="t27"><span class="elb">错因记录（仅本次使用）：</span><button type="button" data-err="方法选错">方法选错</button><button type="button" data-err="符号错">符号错</button><button type="button" data-err="单位错">单位错</button><button type="button" data-err="复数错">复数错</button><span class="errlog"></span></div>
+      </fieldset>
+    </div>
+
+    <div class="card" id="t-28">
+      <h2>习题 2.8 · 支路电流法</h2>
+      <p class="sub">图 2-48：两个节点、三条支路。上节点往下三条支路：支路 1 是 Us1 与 R1 串联，支路 2 是 Us2 与 R2 串联，支路 3 是负载 R3。设 I1、I2 自电源正极流向节点、I3 经 R3 流出节点，列 1 条 KCL（I1 + I2 = I3）和 2 条 KVL，消元求解，每一步代数都展开。</p>
+      <div class="gate" data-gate="t28">
+        <p class="gateq">第一步 · 先选方法（选对了才解锁计算）</p>
+        <label class="opt"><input type="radio" name="g-t28" value="w1" data-why="不对。两条电源支路的电压不同、内阻不同，电源有驱动作用，不能把整个电路当纯电阻网络化简，那样会丢电源。">串并联等效：先把电阻全部化简成一个等效电阻再算</label>
+        <label class="opt"><input type="radio" name="g-t28" value="ok" data-ok="1" data-why="选对了。支路电流法的固定流程：设支路电流与参考方向 → KCL 一条 → 每条含源支路各一条 KVL → 消元、先解出一个再回代。负电流表示实际方向与参考方向相反。">支路电流法：设 I1、I2、I3，列 KCL + 两条 KVL，消元求解</label>
+        <label class="opt"><input type="radio" name="g-t28" value="w2" data-why="不对。本题训练的就是支路电流法；叠加定理要另画两个分电路，而且这道题按支路电流法的方程给分。">叠加定理：两个电源轮流作用，电流分量相加</label>
+        <p class="gatefb" role="status"></p>
+      </div>
+      <fieldset class="work" id="w-t28" disabled>
+      <div class="fgrid">
+        <div class="field"><label>电源 1 <span class="sym">Us1</span></label><div class="inrow"><input id="t28-U1" type="number" step="any" inputmode="decimal"><select id="t28-U1-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>支路 1 电阻 <span class="sym">R1</span></label><div class="inrow"><input id="t28-R1" type="number" step="any" inputmode="decimal"><select id="t28-R1-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+        <div class="field"><label>电源 2 <span class="sym">Us2</span></label><div class="inrow"><input id="t28-U2" type="number" step="any" inputmode="decimal"><select id="t28-U2-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>支路 2 电阻 <span class="sym">R2</span></label><div class="inrow"><input id="t28-R2" type="number" step="any" inputmode="decimal"><select id="t28-R2-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+        <div class="field"><label>负载支路电阻 <span class="sym">R3</span></label><div class="inrow"><input id="t28-R3" type="number" step="any" inputmode="decimal"><select id="t28-R3-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-preset="t28">课本原题预设并计算</button><button class="rand" data-rand="t28">换一组数再练</button><button class="calc" data-tcalc="t28">列方程并消元求解</button></div>
+      <div class="out" id="t28-out"></div>
+      <div class="errchips" data-errbox="t28"><span class="elb">错因记录（仅本次使用）：</span><button type="button" data-err="方法选错">方法选错</button><button type="button" data-err="符号错">符号错</button><button type="button" data-err="单位错">单位错</button><button type="button" data-err="复数错">复数错</button><span class="errlog"></span></div>
+      </fieldset>
+    </div>
+    <div class="card" id="t-211">
+      <h2>习题 2.11 · 叠加定理求 ix</h2>
+      <p class="sub">图 2-50 有 (a)(b) 两个电路，用下方切换钮选。叠加定理的固定动作：某个电源单独作用时，电压源短路、电流源开路；每个分量都带着自己的方向（符号）算，最后代数相加。(b) 的第三个分量注意：-(-2 / 40) = +0.05 A，负负得正——交流群图里这一行把结果写成了 -1/20，是笔误，求和用的也是 +1/20，本程序按 +0.05 计算。</p>
+      <div class="gate" data-gate="t211">
+        <p class="gateq">第一步 · 先选方法（选对了才解锁计算）</p>
+        <label class="opt"><input type="radio" name="g-t211" value="w1" data-why="不对。一次列完方程得不到叠加定理的过程分；本题要看的就是每个独立源单独作用的分量，以及短路/开路的处理。">支路电流法：所有电源同时作用，一次列方程解出 ix</label>
+        <label class="opt"><input type="radio" name="g-t211" value="ok" data-ok="1" data-why="选对了。叠加三步：拆（电压源短路、电流源开路）→ 逐个算分量（带符号）→ 代数相加。分量的负号来自参考方向，不许中途丢掉。">叠加定理：每个独立源单独作用求分量，最后代数相加</label>
+        <label class="opt"><input type="radio" name="g-t211" value="w2" data-why="不对。等效变换改的是电路结构，目的是化成单回路；这题要的是各电源贡献的分量，变换做完反而看不到每个源的贡献。">电源等效变换：把电源逐个变换合并成单回路</label>
+        <p class="gatefb" role="status"></p>
+      </div>
+      <fieldset class="work" id="w-t211" disabled>
+      <div class="seg" role="group" aria-label="子题切换">
+        <button type="button" data-t211="a" aria-pressed="true">(a) 电流源 + 电压源</button>
+        <button type="button" data-t211="b" aria-pressed="false">(b) 三个电压源</button>
+      </div>
+      <div id="t211-a">
+        <div class="fgrid">
+          <div class="field"><label>左段电阻 <span class="sym">R1</span></label><div class="inrow"><input id="t211a-R1" type="number" step="any" inputmode="decimal"><select id="t211a-R1-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+          <div class="field"><label>右段电阻 <span class="sym">R2</span></label><div class="inrow"><input id="t211a-R2" type="number" step="any" inputmode="decimal"><select id="t211a-R2-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+          <div class="field"><label>电流源 <span class="sym">Is</span>（向上）</label><div class="inrow"><input id="t211a-Is" type="number" step="any" inputmode="decimal"><select id="t211a-Is-u"><option value="1">A</option><option value="0.001">mA</option></select></div></div>
+          <div class="field"><label>电压源 <span class="sym">Us</span>（右侧支路）</label><div class="inrow"><input id="t211a-Us" type="number" step="any" inputmode="decimal"><select id="t211a-Us-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        </div>
+      </div>
+      <div id="t211-b" style="display:none">
+        <div class="fgrid">
+          <div class="field"><label>左段电阻 <span class="sym">R1</span>（10 Ω 段）</label><div class="inrow"><input id="t211b-R1" type="number" step="any" inputmode="decimal"><select id="t211b-R1-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+          <div class="field"><label>右段电阻 <span class="sym">R2</span>（40 Ω 段）</label><div class="inrow"><input id="t211b-R2" type="number" step="any" inputmode="decimal"><select id="t211b-R2-u"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
+          <div class="field"><label>左支路电压源 <span class="sym">Us1</span></label><div class="inrow"><input id="t211b-U1" type="number" step="any" inputmode="decimal"><select id="t211b-U1-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+          <div class="field"><label>中间支路电压源 <span class="sym">Us2</span>（ix 在此支路，向上为参考方向）</label><div class="inrow"><input id="t211b-U2" type="number" step="any" inputmode="decimal"><select id="t211b-U2-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+          <div class="field"><label>右支路电压源 <span class="sym">Us3</span>（可负，原题 -2 V）</label><div class="inrow"><input id="t211b-U3" type="number" step="any" inputmode="decimal"><select id="t211b-U3-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        </div>
+      </div>
+      <div class="btnrow"><button class="ex" data-preset="t211a">预设 (a) 并计算</button><button class="ex" data-preset="t211b">预设 (b) 并计算</button></div>
+      <div class="btnrow"><button class="rand" data-rand="t211">换一组数再练</button><button class="calc" data-tcalc="t211">按叠加定理计算</button></div>
+      <div class="out" id="t211-out"></div>
+      <div class="errchips" data-errbox="t211"><span class="elb">错因记录（仅本次使用）：</span><button type="button" data-err="方法选错">方法选错</button><button type="button" data-err="符号错">符号错</button><button type="button" data-err="单位错">单位错</button><button type="button" data-err="复数错">复数错</button><span class="errlog"></span></div>
+      </fieldset>
+    </div>
+  </section>
+
+  <!-- ============ 模块二：相量 ============ -->
+  <section class="panel" id="panel-ph">
+    <div class="card" id="t-34">
+      <h2>习题 3.4 · 相量形式的 KCL 与 KVL</h2>
+      <p class="sub">图 3-46 的 4 元件网络，按图中参考方向有三条关系：U1 点 = U2 点 + U3 点（KVL），U4 点 = -U3 点（KVL，极性相反），I4 点 = -I1 点 - I3 点（KCL）。相量加减必须先化成代数式：实部加实部、虚部加虚部，最后再转回极坐标，并按实部、虚部的正负判断角度所在象限。</p>
+      <div class="gate" data-gate="t34">
+        <p class="gateq">第一步 · 先选方法（选对了才解锁计算）</p>
+        <label class="opt"><input type="radio" name="g-t34" value="w1" data-why="不对。相量不能只加模：角度不同的两个相量，模直接相加会比真实值大。必须先化代数式（实部、虚部分开加）再转回极坐标——这是第 3 章最常见的错法。">把模直接相加减：U1 = 10 + 5 = 15 V，角度取平均</label>
+        <label class="opt"><input type="radio" name="g-t34" value="ok" data-ok="1" data-why="选对了。流程：极坐标 → 代数式（模 * cos、模 * sin）→ 按 KVL/KCL 加减（注意 U4、I4 前面的负号来自参考方向）→ 代数式 → 极坐标（看象限定角）。">相量式 KVL/KCL：先化代数式加减，再转极坐标</label>
+        <label class="opt"><input type="radio" name="g-t34" value="w2" data-why="不对。把瞬时值展开成三角函数逐点相加又慢又容易丢负号；工程和考试都用相量（复数）计算，参考方向体现在式子前面的正负号上。">用瞬时值表达式 sin(ωt + φ) 逐项展开相加</label>
+        <p class="gatefb" role="status"></p>
+      </div>
+      <fieldset class="work" id="w-t34" disabled>
+      <div class="fgrid">
+        <div class="field"><label><span class="sym">U2</span> 的模（V）</label><div class="inrow"><input id="t34-U2m" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label><span class="sym">U2</span> 的角度（度）</label><div class="inrow"><input id="t34-U2a" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label><span class="sym">U3</span> 的模（V）</label><div class="inrow"><input id="t34-U3m" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label><span class="sym">U3</span> 的角度（度）</label><div class="inrow"><input id="t34-U3a" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label><span class="sym">I1</span> 的模（A）</label><div class="inrow"><input id="t34-I1m" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label><span class="sym">I1</span> 的角度（度）</label><div class="inrow"><input id="t34-I1a" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label><span class="sym">I3</span> 的模（A）</label><div class="inrow"><input id="t34-I3m" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label><span class="sym">I3</span> 的角度（度）</label><div class="inrow"><input id="t34-I3a" type="number" step="any" inputmode="decimal"></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-preset="t34">课本原题预设并计算</button><button class="rand" data-rand="t34">换一组数再练</button><button class="calc" data-tcalc="t34">计算并画相量图</button></div>
+      <div class="out" id="t34-out"></div>
+      <div class="errchips" data-errbox="t34"><span class="elb">错因记录（仅本次使用）：</span><button type="button" data-err="方法选错">方法选错</button><button type="button" data-err="符号错">符号错</button><button type="button" data-err="单位错">单位错</button><button type="button" data-err="复数错">复数错</button><span class="errlog"></span></div>
+      </fieldset>
+    </div>
+
+    <div class="card" id="ph-conv">
+      <h2>基础工具 · 复数互换与瞬时值（补充题）</h2>
+      <p class="sub">代数式 a + jb 与极坐标式 模∠角 互换；相量（有效值）转瞬时值：幅值 = 有效值 * 1.414，u(t) = Um * sin(ωt + φ)。例题就是补充题原题：U 点 = 220∠30° V，I 点 = -4 - j3 A。</p>
+      <div class="seg" role="group" aria-label="输入形式">
+        <button id="cv-mode-rect" aria-pressed="true">输入代数式 a + jb</button>
+        <button id="cv-mode-polar" aria-pressed="false">输入极坐标 模∠角</button>
+      </div>
+      <div class="fgrid" id="cv-rect">
+        <div class="field"><label>实部 <span class="sym">a</span></label><div class="inrow"><input id="cv-a" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label>虚部 <span class="sym">b</span>（j 的系数，可负）</label><div class="inrow"><input id="cv-b" type="number" step="any" inputmode="decimal"></div></div>
+      </div>
+      <div class="fgrid" id="cv-polar" style="display:none">
+        <div class="field"><label>模（有效值）</label><div class="inrow"><input id="cv-m" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label>角度 φ（度，可负）</label><div class="inrow"><input id="cv-ang" type="number" step="any" inputmode="decimal"></div></div>
+      </div>
+      <div class="fgrid">
+        <div class="field"><label>物理量</label><div class="inrow"><select id="cv-kind" style="max-width:none;flex:1"><option value="A">电流 i（单位 A）</option><option value="V">电压 u（单位 V）</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-ex="phEx1">例题一：I 点 = -4 - j3 A</button><button class="ex" data-ex="phEx2">例题二：I 点 = 4 - j3 A</button></div>
+      <div class="btnrow"><button class="ex" data-ex="phEx3">例题三：U 点 = 220∠30° V</button><button class="calc" data-calc="conv">换算</button></div>
+      <div class="out" id="cv-out"></div>
+    </div>
+
+    <div class="card" id="ph-diagram">
+      <h2>基础工具 · 相量图与正弦波形（U、I 分开画）</h2>
+      <p class="sub">把电压、电流相量填进来：U 和 I 各画一张相量图、各自比例尺（220 V 和 5 A 不再共用一把尺）；波形图上下两栏，每栏按自己的幅值归一化，谁也不会被压扁。数值标注在各图下方的图例行里。</p>
+      <div class="fgrid">
+        <div class="field"><label>电压有效值 <span class="sym">U</span></label><div class="inrow"><input id="d-U" type="number" step="any" inputmode="decimal"><select id="d-U-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>电压初相 φu（度）</label><div class="inrow"><input id="d-phu" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label>电流有效值 <span class="sym">I</span></label><div class="inrow"><input id="d-I" type="number" step="any" inputmode="decimal"><select id="d-I-u"><option value="1">A</option><option value="0.001">mA</option><option value="0.000001">uA</option></select></div></div>
+        <div class="field"><label>电流初相 φi（度）</label><div class="inrow"><input id="d-phi" type="number" step="any" inputmode="decimal"></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-ex="diagEx">填入例题：U=220∠30°，I=5∠-143.1°</button><button class="calc" data-calc="diag">画图</button></div>
+      <div class="out" id="d-out"></div>
+    </div>
+
+    <div class="card" id="ph-elem">
+      <h2>基础工具 · 单元件交流（R / L / C）</h2>
+      <p class="sub">电阻：电压电流同相。电感：XL = 2 * π * f * L，电压超前电流 90°。电容：XC = 1 / (2 * π * f * C)，电流超前电压 90°。填电流求电压，或填电压求电流（二选一）。</p>
+      <div class="seg" role="group" aria-label="元件类型">
+        <button data-elem="R" aria-pressed="true">电阻 R</button>
+        <button data-elem="L" aria-pressed="false">电感 L</button>
+        <button data-elem="C" aria-pressed="false">电容 C</button>
+      </div>
+      <div class="fgrid">
+        <div class="field" id="el-f-param"><label id="el-param-label">电阻 R</label><div class="inrow"><input id="el-X" type="number" step="any" inputmode="decimal"><select id="el-X-u"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></div></div>
+        <div class="field" id="el-f-freq"><label>频率 f</label><div class="inrow"><input id="el-f" type="number" step="any" inputmode="decimal"><select id="el-f-u"><option value="1">Hz</option><option value="1000">kHz</option></select></div></div>
+        <div class="field"><label>电流有效值 I（或留空填 U）</label><div class="inrow"><input id="el-I" type="number" step="any" inputmode="decimal"><select id="el-I-u"><option value="1">A</option><option value="0.001">mA</option></select></div></div>
+        <div class="field"><label>电压有效值 U（或留空填 I）</label><div class="inrow"><input id="el-U" type="number" step="any" inputmode="decimal"><select id="el-U-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>电流初相 φi（度）</label><div class="inrow"><input id="el-phi" type="number" step="any" inputmode="decimal" value="0"></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-ex="elemEx">填入例题：L=127mH，f=50Hz，I=4.43A</button><button class="calc" data-calc="elem">计算</button></div>
+      <div class="out" id="el-out"></div>
+    </div>
+    <div class="card" id="t-356">
+      <h2>习题 3.5 / 3.6 · 单电容与单电感</h2>
+      <p class="sub">纯电抗元件的固定套路：先算容抗 XC = 1 / (2 * π * f * C) 或感抗 XL = 2 * π * f * L，再用相量欧姆定律求另一个量，最后处理 90° 相位：电容电流超前电压 90°，电感电压超前电流 90°。已知量可以给瞬时值（幅值 + 初相）或相量（有效值 + 初相），另一个量两种表示都输出。</p>
+      <div class="gate" data-gate="t356">
+        <p class="gateq">第一步 · 先选方法（选对了才解锁计算）</p>
+        <label class="opt"><input type="radio" name="g-t356" value="w1" data-why="不对。L、C 不是电阻，不能把电感量/电容量直接当 R 用；要先换算成感抗/容抗，而且电压电流之间还有 90° 相位差，直流欧姆定律里没有这一项。">直流欧姆定律：U = I * R，R 就填 L 或 C 的数值</label>
+        <label class="opt"><input type="radio" name="g-t356" value="ok" data-ok="1" data-why="选对了。三步：算抗（XL 或 XC）→ 模用欧姆定律（U = I * X）→ 相位 ±90°（谁超前看元件：电感电压超前、电容电流超前）。">先算 XL / XC，再用相量欧姆定律并处理 ±90° 相位</label>
+        <label class="opt"><input type="radio" name="g-t356" value="w2" data-why="不对。纯电抗元件的平均功率为零，P = U * I 给的是视在功率关系，求电流要用阻抗的模和相位，不能只靠功率公式。">功率公式：由 P = U * I 直接解出电流</label>
+        <p class="gatefb" role="status"></p>
+      </div>
+      <fieldset class="work" id="w-t356" disabled>
+      <div class="seg" role="group" aria-label="元件类型">
+        <button type="button" data-t356el="C" aria-pressed="true">电容 C（习题 3.5）</button>
+        <button type="button" data-t356el="L" aria-pressed="false">电感 L（习题 3.6）</button>
+      </div>
+      <div class="seg" role="group" aria-label="已知量">
+        <button type="button" data-t356g="u-inst" aria-pressed="true">已知 u(t)：幅值 + 初相</button>
+        <button type="button" data-t356g="i-inst" aria-pressed="false">已知 i(t)：幅值 + 初相</button>
+        <button type="button" data-t356g="u-ph" aria-pressed="false">已知 U 相量：有效值 + 初相</button>
+        <button type="button" data-t356g="i-ph" aria-pressed="false">已知 I 相量：有效值 + 初相</button>
+      </div>
+      <div class="fgrid">
+        <div class="field"><label id="t356-vlab">电容 C</label><div class="inrow"><input id="t356-V" type="number" step="any" inputmode="decimal"><select id="t356-V-u"><option value="0.000001">uF</option><option value="1">F</option><option value="0.000000001">nF</option></select></div></div>
+        <div class="field"><label>频率 <span class="sym">f</span></label><div class="inrow"><input id="t356-f" type="number" step="any" inputmode="decimal"><select id="t356-f-u"><option value="1">Hz</option><option value="1000">kHz</option></select></div></div>
+        <div class="field"><label id="t356-glab">已知量的幅值（瞬时值）或有效值（相量）</label><div class="inrow"><input id="t356-G" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label>已知量的初相（度）</label><div class="inrow"><input id="t356-P" type="number" step="any" inputmode="decimal"></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-preset="t35">预设 3.5 并计算</button><button class="ex" data-preset="t36">预设 3.6 并计算</button></div>
+      <div class="btnrow"><button class="rand" data-rand="t356">换一组数再练</button><button class="calc" data-tcalc="t356">计算并画图</button></div>
+      <div class="out" id="t356-out"></div>
+      <div class="errchips" data-errbox="t356"><span class="elb">错因记录（仅本次使用）：</span><button type="button" data-err="方法选错">方法选错</button><button type="button" data-err="符号错">符号错</button><button type="button" data-err="单位错">单位错</button><button type="button" data-err="复数错">复数错</button><span class="errlog"></span></div>
+      </fieldset>
+    </div>
+
+    <div class="card" id="t-319">
+      <h2>习题 3.19 · 复阻抗串并联分压</h2>
+      <p class="sub">图 3-56 三个小题共用一个动作：U 点 = [Zp / (Zs + Zp)] * Us 点，其中 Zs 是串联段阻抗、Zp 是被求电压的那段阻抗。(a) Zs = 5、Zp = j5；(b) Zs = 5、Zp = 5 - j5；(c) 先把 -j 与 (1 + j) 并联成 Zp = 1 - j，再分压（Zs = 1）。复数除法逐步算：分子分母同乘分母的共轭，实部、虚部分开处理——模不许直接相加。</p>
+      <div class="gate" data-gate="t319">
+        <p class="gateq">第一步 · 先选方法（选对了才解锁计算）</p>
+        <label class="opt"><input type="radio" name="g-t319" value="w1" data-why="不对。用模分压 U = Us * |Zp| / (|Zs| + |Zp|) 只能得到大小、丢掉角度，而且大小本身也错：复数相加不等于模相加。这正是 3.19 与直流电阻分压的区别。">模分压：先把各阻抗取模，再按直流分压比例算</label>
+        <label class="opt"><input type="radio" name="g-t319" value="ok" data-ok="1" data-why="选对了。复阻抗分压与直流公式形式相同，但全程复数运算：先算 Zs + Zp，再算 Zp / (Zs + Zp)（乘共轭有理化），最后乘 Us 并转极坐标。">复阻抗分压：U = [Zp / (Zs + Zp)] * Us，全程复数运算</label>
+        <label class="opt"><input type="radio" name="g-t319" value="w2" data-why="不对。电路里只有一个电源，叠加定理无从拆起；本题就是一条分压公式加复数运算。">叠加定理：把电源拆开逐个作用再相加</label>
+        <p class="gatefb" role="status"></p>
+      </div>
+      <fieldset class="work" id="w-t319" disabled>
+      <div class="fgrid">
+        <div class="field"><label>电源相量 <span class="sym">Us</span> 的模（V）</label><div class="inrow"><input id="t319-Um" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label>电源相量 <span class="sym">Us</span> 的角度（度）</label><div class="inrow"><input id="t319-Ua" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label>(a) 串联段 Zs：实部 / 虚部</label><div class="inrow"><input id="t319-a-sr" type="number" step="any" inputmode="decimal" aria-label="(a) Zs 实部"><input id="t319-a-si" type="number" step="any" inputmode="decimal" aria-label="(a) Zs 虚部"></div></div>
+        <div class="field"><label>(a) 分压段 Zp：实部 / 虚部</label><div class="inrow"><input id="t319-a-pr" type="number" step="any" inputmode="decimal" aria-label="(a) Zp 实部"><input id="t319-a-pi" type="number" step="any" inputmode="decimal" aria-label="(a) Zp 虚部"></div></div>
+        <div class="field"><label>(b) 串联段 Zs：实部 / 虚部</label><div class="inrow"><input id="t319-b-sr" type="number" step="any" inputmode="decimal" aria-label="(b) Zs 实部"><input id="t319-b-si" type="number" step="any" inputmode="decimal" aria-label="(b) Zs 虚部"></div></div>
+        <div class="field"><label>(b) 分压段 Zp：实部 / 虚部</label><div class="inrow"><input id="t319-b-pr" type="number" step="any" inputmode="decimal" aria-label="(b) Zp 实部"><input id="t319-b-pi" type="number" step="any" inputmode="decimal" aria-label="(b) Zp 虚部"></div></div>
+        <div class="field"><label>(c) 串联段 Zs：实部 / 虚部</label><div class="inrow"><input id="t319-c-sr" type="number" step="any" inputmode="decimal" aria-label="(c) Zs 实部"><input id="t319-c-si" type="number" step="any" inputmode="decimal" aria-label="(c) Zs 虚部"></div></div>
+        <div class="field"><label>(c) 并联支路 1 Z1：实部 / 虚部</label><div class="inrow"><input id="t319-c-1r" type="number" step="any" inputmode="decimal" aria-label="(c) Z1 实部"><input id="t319-c-1i" type="number" step="any" inputmode="decimal" aria-label="(c) Z1 虚部"></div></div>
+        <div class="field"><label>(c) 并联支路 2 Z2：实部 / 虚部</label><div class="inrow"><input id="t319-c-2r" type="number" step="any" inputmode="decimal" aria-label="(c) Z2 实部"><input id="t319-c-2i" type="number" step="any" inputmode="decimal" aria-label="(c) Z2 虚部"></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-preset="t319">课本原题预设并计算</button><button class="rand" data-rand="t319">换一组数再练</button><button class="calc" data-tcalc="t319">计算 (a)(b)(c)</button></div>
+      <div class="out" id="t319-out"></div>
+      <div class="errchips" data-errbox="t319"><span class="elb">错因记录（仅本次使用）：</span><button type="button" data-err="方法选错">方法选错</button><button type="button" data-err="符号错">符号错</button><button type="button" data-err="单位错">单位错</button><button type="button" data-err="复数错">复数错</button><span class="errlog"></span></div>
+      </fieldset>
+    </div>
+  </section>
+
+  <!-- ============ 模块三：RLC ============ -->
+  <section class="panel" id="panel-rlc">
+    <div class="card" id="rlc-main">
+      <h2>习题 3.15 · RLC 串联与功率</h2>
+      <p class="sub">XL = 2πfL，XC = 1/(2πfC)，Z = R + j(XL - XC)，I = U / |Z|，P = I * I * R，Q = I * I * (XL - XC)，S = U * I，cosφ = R / |Z|。例题为课本 3.15。</p>
+      <div class="fgrid">
+        <div class="field"><label>电源电压 <span class="sym">U</span></label><div class="inrow"><input id="z-U" type="number" step="any" inputmode="decimal"><select id="z-U-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>频率 <span class="sym">f</span></label><div class="inrow"><input id="z-f" type="number" step="any" inputmode="decimal"><select id="z-f-u"><option value="1">Hz</option><option value="1000">kHz</option></select></div></div>
+        <div class="field"><label>电阻 <span class="sym">R</span></label><div class="inrow"><input id="z-R" type="number" step="any" inputmode="decimal"><select id="z-R-u"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></div></div>
+        <div class="field"><label>电感 <span class="sym">L</span></label><div class="inrow"><input id="z-L" type="number" step="any" inputmode="decimal"><select id="z-L-u"><option value="1">H</option><option value="0.001">mH</option><option value="0.000001">uH</option></select></div></div>
+        <div class="field"><label>电容 <span class="sym">C</span></label><div class="inrow"><input id="z-C" type="number" step="any" inputmode="decimal"><select id="z-C-u"><option value="1">F</option><option value="0.000001">uF</option><option value="0.000000001">nF</option></select></div></div>
+        <div class="field"><label>目标功率因数 cosφ2（选填）</label><div class="inrow"><input id="z-cos2" type="number" step="any" inputmode="decimal" placeholder="如 0.95"></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-ex="rlcEx">填入例题 3.15 并计算</button><button class="rand" id="z-rand" type="button">换一组数再练</button><button class="calc" data-calc="rlc">计算并画图</button></div>
+      <div class="out" id="z-out"></div>
+    </div>
+  </section>
+
+  <!-- ============ 模块四：半导体 ============ -->
+  <section class="panel" id="panel-semi">
+    <div class="card" id="semi-diode">
+      <h2>习题 7.1 · 理想二极管限幅</h2>
+      <p class="sub">模板（习题 7.1）：二极管与直流电源 E 串联构成限幅电路。ui 大于 E 时二极管截止、uo = ui；ui 小于 E 时二极管导通（理想管压降 0）、uo = E。波形图由 Um 和 E 生成。</p>
+      <div class="fgrid">
+        <div class="field"><label>直流电源 <span class="sym">E</span></label><div class="inrow"><input id="dd-E" type="number" step="any" inputmode="decimal"><select id="dd-E-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>输入幅值 <span class="sym">Um</span>（ui = Um sinωt）</label><div class="inrow"><input id="dd-Um" type="number" step="any" inputmode="decimal"><select id="dd-Um-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-ex="diodeEx">填入习题 7.1：E=5V，Um=10V</button><button class="calc" data-calc="diode">判断并画波形</button></div>
+      <div class="out" id="dd-out"></div>
+    </div>
+
+    <div class="card" id="semi-zener">
+      <h2>习题 7.3 · 稳压管输出电压</h2>
+      <p class="sub">两只稳压管 Vz1、Vz2 的四种接法（习题 7.3）：串联反接相加、并联取小、一反一正串联、正向导通。正向导通压降取 0.7 V。</p>
+      <div class="fgrid">
+        <div class="field"><label>稳压值 <span class="sym">Vz1</span></label><div class="inrow"><input id="zn-1" type="number" step="any" inputmode="decimal"><select id="zn-1-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>稳压值 <span class="sym">Vz2</span></label><div class="inrow"><input id="zn-2" type="number" step="any" inputmode="decimal"><select id="zn-2-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+      </div>
+      <div class="seg" role="group" aria-label="接法模板" style="margin-top:12px">
+        <button data-zen="a" aria-pressed="true">(a) 串联反接</button>
+        <button data-zen="b" aria-pressed="false">(b) 并联反接</button>
+        <button data-zen="c" aria-pressed="false">(c) 一反一正串联</button>
+        <button data-zen="d" aria-pressed="false">(d) 正向导通</button>
+      </div>
+      <div class="btnrow"><button class="ex" data-ex="zenEx">填入习题 7.3：Vz1=8V，Vz2=6V</button><button class="calc" data-calc="zener">计算 Uo</button></div>
+      <div class="out" id="zn-out"></div>
+    </div>
+
+    <div class="card" id="semi-bjt">
+      <h2>例 8-1 三极管静态工作点</h2>
+      <p class="sub">固定偏置电路估算：IB = (UCC - UBE) / RB（UBE 填 0 即忽略），IC = β * IB，UCE = UCC - IC * RC。饱和电流 ICsat = UCC / RC，若算出的 IC 大于 ICsat，说明已进入饱和区，实际 IC 取 ICsat、UCE 约 0。</p>
+      <div class="fgrid">
+        <div class="field"><label>电源 <span class="sym">UCC</span></label><div class="inrow"><input id="b-UCC" type="number" step="any" inputmode="decimal"><select id="b-UCC-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+        <div class="field"><label>集电极电阻 <span class="sym">RC</span></label><div class="inrow"><input id="b-RC" type="number" step="any" inputmode="decimal"><select id="b-RC-u"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></div></div>
+        <div class="field"><label>基极电阻 <span class="sym">RB</span></label><div class="inrow"><input id="b-RB" type="number" step="any" inputmode="decimal"><select id="b-RB-u"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select></div></div>
+        <div class="field"><label>放大倍数 <span class="sym">β</span></label><div class="inrow"><input id="b-beta" type="number" step="any" inputmode="decimal"></div></div>
+        <div class="field"><label><span class="sym">UBE</span>（0 = 忽略，硅管常取 0.7）</label><div class="inrow"><input id="b-UBE" type="number" step="any" inputmode="decimal" value="0"><select id="b-UBE-u"><option value="1">V</option><option value="0.001">mV</option></select></div></div>
+      </div>
+      <div class="btnrow"><button class="ex" data-ex="bjtEx">填入例 8-1 并计算</button><button class="calc" data-calc="bjt">计算并画图</button></div>
+      <div class="out" id="b-out"></div>
+    </div>
+  </section>
+
+  <p class="foot">V2 范围：老师勾的作业题 1.1、1.3、1.6、1.7、1.12、2.1、2.7、2.8、2.11、3.4、3.5、3.6、3.15、3.19、7.1、7.3 与例 8-1 及相量补充题，另保留 V1 基础工具。第 4、5、6、9–12 章尚未学习，未纳入。</p>
+</main>
+
+<script>
+"use strict";
+/* ---------- 通用工具 ---------- */
+function $(id){return document.getElementById(id);}
+function gv(id){var el=$(id); if(!el) return NaN; var v=parseFloat(el.value); if(isNaN(v)) return NaN; var s=$(id+"-u"); if(s) v*=parseFloat(s.value); return v;}
+function gvRaw(id){var el=$(id); if(!el) return NaN; return parseFloat(el.value);}
+function blank(id){var el=$(id); return !el || el.value.trim()==="";}
+function setF(id,val,unitVal){var el=$(id); if(el) el.value=val; var s=$(id+"-u"); if(s&&unitVal!==undefined) s.value=String(unitVal);}
+function f3(x){ /* 3 位有效数字 */
+  if(x===0||!isFinite(x)) return "0";
+  var s=Number(x).toPrecision(3);
+  if(s.indexOf("e")>=0||s.indexOf("E")>=0){ return String(Number(s)); }
+  return String(Number(s));
+}
+function fN(x,d){ if(!isFinite(x)) return "—"; return String(Number(Number(x).toFixed(d===undefined?3:d))); }
+function fAng(x){ if(!isFinite(x)) return "—"; return String(Math.round(x*10)/10); }
+function angNorm(a){ while(a>180)a-=360; while(a<=-180)a+=360; return a; }
+function fmtI(A){ if(!isFinite(A))return"—"; var a=Math.abs(A);
+  if(a>0&&a<0.001) return f3(A*1e6)+" uA"; if(a<1) return f3(A*1000)+" mA"; return f3(A)+" A"; }
+function fmtU(V){ if(!isFinite(V))return"—"; var a=Math.abs(V);
+  if(a>0&&a<0.001) return f3(V*1000)+" mV"; return f3(V)+" V"; }
+function fmtR(R){ if(!isFinite(R))return"—"; var a=Math.abs(R);
+  if(a>=1e6) return f3(R/1e6)+" MΩ"; if(a>=1000) return f3(R/1000)+" kΩ"; return f3(R)+" Ω"; }
+function fmtC(C){ if(!isFinite(C))return"—"; var a=Math.abs(C);
+  if(a>=1e-3) return f3(C*1000)+" mF"; if(a>=1e-6) return f3(C*1e6)+" uF"; if(a>=1e-9) return f3(C*1e9)+" nF"; return f3(C)+" F"; }
+function fmtL(L){ if(!isFinite(L))return"—"; var a=Math.abs(L);
+  if(a>=1) return f3(L)+" H"; if(a>=1e-3) return f3(L*1000)+" mH"; return f3(L*1e6)+" uH"; }
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+function renderOut(boxId, rows, steps, figs, note){
+  var h='<div class="res">';
+  rows.forEach(function(r){ h+='<div class="rrow"><span class="rk">'+esc(r[0])+'</span><span class="rv">'+esc(r[1])+'</span></div>'; });
+  h+='</div>';
+  if(note) h+=note;
+  if(steps&&steps.length){
+    h+='<div class="steps"><h3>逐步推导（plain text 公式，可复制）</h3><pre>'+esc(steps.join("\n"))+'</pre>'+
+       '<div style="margin-top:8px"><button class="copy" data-copy="'+boxId+'">复制步骤文本</button><span class="copied" id="'+boxId+'-cp"></span></div></div>';
+  }
+  if(figs) h+=figs;
+  var box=$(boxId); box.innerHTML=h; box.classList.add("on");
+  box.setAttribute("data-steps", steps?steps.join("\n"):"");
+}
+document.addEventListener("click",function(e){
+  var c=e.target.closest("[data-copy]");
+  if(c){ var box=$(c.getAttribute("data-copy")); var txt=box.getAttribute("data-steps")||"";
+    function done(){ var s=$(c.getAttribute("data-copy")+"-cp"); if(s){s.textContent="已复制"; setTimeout(function(){s.textContent="";},1800);} }
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,done); }
+    else{ var ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy");}catch(_){} document.body.removeChild(ta); done(); }
+  }
+});
+function bad(boxId,msg){ var box=$(boxId); box.innerHTML='<div class="warn">'+esc(msg)+'</div>'; box.classList.add("on"); }
+
+/* 标签页切换（交流标签同时显示相量与 RLC 两个面板） */
+document.querySelectorAll(".tab").forEach(function(t){
+  t.addEventListener("click",function(){
+    document.querySelectorAll(".tab").forEach(function(x){x.setAttribute("aria-selected","false");});
+    t.setAttribute("aria-selected","true");
+    document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("on");});
+    t.getAttribute("data-show").split(" ").forEach(function(id){ var p=$(id); if(p) p.classList.add("on"); });
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+
+/* SVG 小工具 */
+var C_INK="var(--ink)", C_GRID="#9db3ab", C_U="#1d4ed8", C_I="#c2410c", C_A="#0b6e5d";
+function arrowHead(x,y,angDeg,color,id){
+  var a=angDeg*Math.PI/180, s=9;
+  var x1=x-s*Math.cos(a-0.42), y1=y+s*Math.sin(a-0.42);
+  var x2=x-s*Math.cos(a+0.42), y2=y+s*Math.sin(a+0.42);
+  return '<polygon points="'+x+','+y+' '+x1+','+y1+' '+x2+','+y2+'" fill="'+color+'"/>';
+}
+function phasorSVG(U,phu,I,phi,title){
+  var W=360,H=300,cx=180,cy=160,maxV=Math.max(U,I,1e-9),scale=105/maxV;
+  function vec(mag,ang,color,label,unit){
+    var a=ang*Math.PI/180, len=Math.max(mag*scale,4);
+    var x=cx+len*Math.cos(a), y=cy-len*Math.sin(a);
+    var lx=cx+(len+16)*Math.cos(a), ly=cy-(len+16)*Math.sin(a);
+    return '<line x1="'+cx+'" y1="'+cy+'" x2="'+x+'" y2="'+y+'" stroke="'+color+'" stroke-width="2.6"/>'+
+      arrowHead(x,y,ang,color)+
+      '<text x="'+lx+'" y="'+(ly+4)+'" font-size="15" font-weight="700" fill="'+color+'" text-anchor="middle">'+label+' '+f3(mag)+unit+'</text>';
+  }
+  var d=angNorm(phu-phi);
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(title)+'">';
+  s+='<line x1="20" y1="'+cy+'" x2="345" y2="'+cy+'" stroke="'+C_GRID+'" stroke-width="1"/>';
+  s+='<line x1="'+cx+'" y1="15" x2="'+cx+'" y2="285" stroke="'+C_GRID+'" stroke-width="1"/>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="3" fill="'+C_INK+'"/>';
+  s+=vec(U,phu,C_U,"U","V"); s+=vec(I,phi,C_I,"I","A");
+  s+='<text x="180" y="296" font-size="13.5" fill="'+C_INK+'" text-anchor="middle">相位差 φu - φi = '+fAng(d)+'°（'+(d>0?"电压超前":(d<0?"电压滞后":"同相"))+'）</text>';
+  return s+'</svg>';
+}
+function waveSVG(items,title,height){
+  /* items: {amp, phaseDeg, color, label, clip: null 或 {E}} 横轴 0..720 度 */
+  var W=360,H=height||220, midY=H/2-6, x0=34, x1=352;
+  var maxA=1; items.forEach(function(it){ maxA=Math.max(maxA,Math.abs(it.amp)); if(it.clip) maxA=Math.max(maxA,Math.abs(it.clip.E)); });
+  var sc=(H/2-34)/maxA;
+  function X(deg){ return x0+(x1-x0)*deg/720; }
+  function Y(v){ return midY-v*sc; }
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(title)+'">';
+  s+='<line x1="'+x0+'" y1="'+midY+'" x2="'+x1+'" y2="'+midY+'" stroke="'+C_GRID+'"/>';
+  s+='<line x1="'+x0+'" y1="8" x2="'+x0+'" y2="'+(H-26)+'" stroke="'+C_GRID+'"/>';
+  [0,180,360,540,720].forEach(function(dg){ s+='<text x="'+X(dg)+'" y="'+(H-8)+'" font-size="11.5" fill="'+C_INK+'" text-anchor="middle">'+dg+'°</text>'; });
+  s+='<text x="'+(x1-2)+'" y="'+(midY-6)+'" font-size="12" fill="'+C_INK+'" text-anchor="end">ωt</text>';
+  items.forEach(function(it){
+    if(it.clip){ s+='<line x1="'+x0+'" y1="'+Y(it.clip.E)+'" x2="'+x1+'" y2="'+Y(it.clip.E)+'" stroke="'+C_GRID+'" stroke-dasharray="4 3"/>'+
+      '<text x="'+(x0-2)+'" y="'+(Y(it.clip.E)-4)+'" font-size="11.5" fill="'+C_INK+'" text-anchor="end">E='+f3(it.clip.E)+'V</text>'; }
+    var pts=[];
+    for(var dg=0;dg<=720;dg+=3){
+      var v=it.amp*Math.sin((dg+it.phaseDeg)*Math.PI/180);
+      if(it.clip) v=Math.max(v,it.clip.E);
+      pts.push((dg===0?"M":"L")+X(dg).toFixed(1)+","+Y(v).toFixed(1));
+    }
+    s+='<path d="'+pts.join(" ")+'" fill="none" stroke="'+it.color+'" stroke-width="2.2"/>';
+    s+='<text x="'+(x0+4)+'" y="'+(Y(it.amp)-6)+'" font-size="12.5" font-weight="700" fill="'+it.color+'">'+esc(it.label)+' 幅值 '+f3(Math.abs(it.amp))+'</text>';
+  });
+  return s+'</svg>';
+}
+</script>
+<script>
+"use strict";
+/* ---------- 例题填充 ---------- */
+var EXAMPLES={
+  ohmEx:function(){ setF("o-U",12,1); setF("o-I",""); setF("o-R",4,1); calcOhm(); },
+  serEx:function(){ setF("s-U",24,1); setF("s-R1",10,1); setF("s-R2",20,1); setF("s-R3",30,1); calcSeries(); },
+  parEx:function(){ setF("p-I",3,1); setF("p-R1",6,1); setF("p-R2",3,1); setF("p-R3",""); calcParallel(); },
+  ratedEx:function(){ setF("r-P",0.25,1); setF("r-R",100,1); calcRated(); },
+  potEx:function(){ setF("v-E1",12,1); setF("v-E2",6,1); setF("v-R1",1,1000); setF("v-R2",1,1000); calcPot(); },
+  phEx1:function(){ cvMode("rect"); setF("cv-a",-4); setF("cv-b",-3); $("cv-kind").value="A"; calcConv(); },
+  phEx2:function(){ cvMode("rect"); setF("cv-a",4); setF("cv-b",-3); $("cv-kind").value="A"; calcConv(); },
+  phEx3:function(){ cvMode("polar"); setF("cv-m",220); setF("cv-ang",30); $("cv-kind").value="V"; calcConv(); },
+  diagEx:function(){ setF("d-U",220,1); setF("d-phu",30); setF("d-I",5,1); setF("d-phi",-143.1); calcDiag(); },
+  elemEx:function(){ setElem("L"); setF("el-X",127,0.001); setF("el-f",50,1); setF("el-I",4.43,1); setF("el-U",""); setF("el-phi",0); calcElem(); },
+  rlcEx:function(){ setF("z-U",220,1); setF("z-f",50,1); setF("z-R",30,1); setF("z-L",127,0.001); setF("z-C",40,0.000001); setF("z-cos2",""); calcRLC(); },
+  diodeEx:function(){ setF("dd-E",5,1); setF("dd-Um",10,1); calcDiode(); },
+  zenEx:function(){ setF("zn-1",8,1); setF("zn-2",6,1); calcZener(); },
+  bjtEx:function(){ setF("b-UCC",12,1); setF("b-RC",3,1000); setF("b-RB",240,1000); setF("b-beta",40); setF("b-UBE",0,1); calcBJT(); }
+};
+document.querySelectorAll("[data-ex]").forEach(function(b){ b.addEventListener("click",function(){ EXAMPLES[b.getAttribute("data-ex")](); }); });
+document.querySelectorAll("[data-calc]").forEach(function(b){ b.addEventListener("click",function(){
+  ({ohm:calcOhm,series:calcSeries,parallel:calcParallel,rated:calcRated,pot:calcPot,
+    conv:calcConv,diag:calcDiag,elem:calcElem,rlc:calcRLC,diode:calcDiode,zener:calcZener,bjt:calcBJT})[b.getAttribute("data-calc")]();
+}); });
+
+/* ---------- 1.1 欧姆定律 ---------- */
+function calcOhm(){
+  var hasU=!blank("o-U"), hasI=!blank("o-I"), hasR=!blank("o-R");
+  var U=gv("o-U"), I=gv("o-I"), R=gv("o-R"), steps=[], known="";
+  if((hasU?1:0)+(hasI?1:0)+(hasR?1:0)<2){ bad("o-out","三个量至少要填两个，留空的那个由程序算出。"); return; }
+  if(!hasR){ R=U/I; known="已知 U = "+fmtU(U)+"，I = "+fmtI(I)+"，求 R 和 P。";
+    steps.push("第 1 步：由欧姆定律 U = I * R，移项得 R = U / I");
+    steps.push("代入：R = "+f3(U)+" V / "+f3(I)+" A = "+f3(R)+" Ω");
+  } else if(!hasI){ I=U/R; known="已知 U = "+fmtU(U)+"，R = "+fmtR(R)+"，求 I 和 P。";
+    steps.push("第 1 步：由欧姆定律 U = I * R，移项得 I = U / R");
+    steps.push("代入：I = "+f3(U)+" V / "+f3(R)+" Ω = "+fmtI(I));
+  } else if(!hasU){ U=I*R; known="已知 I = "+fmtI(I)+"，R = "+fmtR(R)+"，求 U 和 P。";
+    steps.push("第 1 步：欧姆定律 U = I * R");
+    steps.push("代入：U = "+f3(I)+" A * "+f3(R)+" Ω = "+f3(U)+" V");
+  } else { known="U、I、R 都填了：先验算欧姆定律是否自洽，再算功率。";
+    steps.push("第 1 步：验算 I * R = "+f3(I)+" A * "+f3(R)+" Ω = "+f3(I*R)+" V，与所填 U = "+f3(U)+" V 对比（有微小差异时以 U、R 为准重算 I）");
+    I=U/R; steps.push("取 I = U / R = "+f3(U)+" / "+f3(R)+" = "+fmtI(I));
+  }
+  var P=U*I;
+  steps.push("第 2 步：功率 P = U * I = "+f3(U)+" V * "+f3(I)+" A = "+f3(P)+" W");
+  steps.push("第 3 步：换一个公式交叉验算：P = I * I * R = "+f3(I)+" * "+f3(I)+" * "+f3(R)+" = "+f3(I*I*R)+" W");
+  steps.push("        P = U * U / R = "+f3(U)+" * "+f3(U)+" / "+f3(R)+" = "+f3(U*U/R)+" W，三个结果一致");
+  steps.push("回代验算：I * R = "+f3(I)+" A * "+f3(R)+" Ω = "+f3(I*R)+" V，应等于 U = "+f3(U)+" V ✓");
+  steps.unshift(known);
+  renderOut("o-out",[["电压 U",fmtU(U)],["电流 I",fmtI(I)],["电阻 R",fmtR(R)],["功率 P",f3(P)+" W"]],steps,null);
+}
+
+/* ---------- 1.2 串联 ---------- */
+function seriesSVG(U,Rs,Is,Us){
+  var W=360,H=210,s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="串联电路原理图">';
+  var top=46,bot=170,xL=36,xR=324;
+  s+='<line x1="'+xL+'" y1="'+top+'" x2="'+xR+'" y2="'+top+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+xL+'" y1="'+bot+'" x2="'+xR+'" y2="'+bot+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+xL+'" y1="'+top+'" x2="'+xL+'" y2="'+bot+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  /* 电源（右竖边） */
+  s+='<line x1="'+xR+'" y1="'+top+'" x2="'+xR+'" y2="98" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+(xR-16)+'" y1="98" x2="'+(xR+16)+'" y2="98" stroke="'+C_INK+'" stroke-width="3"/>';
+  s+='<line x1="'+(xR-8)+'" y1="106" x2="'+(xR+8)+'" y2="106" stroke="'+C_INK+'" stroke-width="3"/>';
+  s+='<line x1="'+xR+'" y1="106" x2="'+xR+'" y2="'+bot+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<text x="'+(xR-4)+'" y="88" font-size="14" font-weight="700" fill="'+C_INK+'" text-anchor="end">U = '+f3(U)+' V</text>';
+  /* 电阻沿上边排布 */
+  var n=Rs.length, seg=(xR-xL)/n;
+  for(var k=0;k<n;k++){
+    var cx0=xL+seg*k+seg/2, rw=Math.min(64,seg-26);
+    s+='<line x1="'+(xL+seg*k)+'" y1="'+top+'" x2="'+(cx0-rw/2)+'" y2="'+top+'" stroke="'+C_INK+'" stroke-width="2"/>';
+    s+='<rect x="'+(cx0-rw/2)+'" y="'+(top-11)+'" width="'+rw+'" height="22" fill="var(--card)" stroke="'+C_INK+'" stroke-width="2"/>';
+    s+='<line x1="'+(cx0+rw/2)+'" y1="'+top+'" x2="'+(xL+seg*(k+1))+'" y2="'+top+'" stroke="'+C_INK+'" stroke-width="2"/>';
+    s+='<text x="'+cx0+'" y="'+(top-20)+'" font-size="13.5" font-weight="700" fill="'+C_INK+'" text-anchor="middle">R'+(k+1)+' = '+fmtR(Rs[k])+'</text>';
+    s+='<text x="'+cx0+'" y="'+(top+34)+'" font-size="13" fill="'+C_U+'" text-anchor="middle">U'+(k+1)+' = '+f3(Us[k])+' V</text>';
+  }
+  /* 电流箭头（下边，向左回到电源，按顺时针：上边向右） */
+  var ax=xL+(xR-xL)/2;
+  s+='<line x1="'+(ax-26)+'" y1="'+top+'" x2="'+(ax+26)+'" y2="'+top+'" stroke="'+C_I+'" stroke-width="2.4"/>'+arrowHead(ax+30,top,0,C_I);
+  s+='<text x="'+ax+'" y="'+(bot+22)+'" font-size="14" font-weight="700" fill="'+C_I+'" text-anchor="middle">I = '+fmtI(Is)+'（串联处处相等，参考方向如箭头）</text>';
+  return s+'</svg>';
+}
+function calcSeries(){
+  var U=gv("s-U"), Rs=[gv("s-R1"),gv("s-R2")];
+  if(!blank("s-R3")) Rs.push(gv("s-R3"));
+  if(isNaN(U)||Rs.some(isNaN)||Rs.some(function(r){return r<=0;})){ bad("s-out","请填总电压 U 和至少 R1、R2（电阻要大于 0）。"); return; }
+  var Rsum=Rs.reduce(function(a,b){return a+b;},0), I=U/Rsum;
+  var Us=Rs.map(function(r){return U*r/Rsum;});
+  var steps=["已知：U = "+fmtU(U)+"，"+Rs.map(function(r,i){return "R"+(i+1)+" = "+fmtR(r);}).join("，")+"，串联连接。"];
+  steps.push("第 1 步：串联等效电阻 R = "+Rs.map(function(r){return f3(r);}).join(" + ")+" = "+f3(Rsum)+" Ω");
+  steps.push("第 2 步：串联电流处处相等，I = U / R = "+f3(U)+" V / "+f3(Rsum)+" Ω = "+fmtI(I));
+  Rs.forEach(function(r,i){
+    steps.push("第 "+(3+i)+" 步：分压 U"+(i+1)+" = U * R"+(i+1)+" / R = "+f3(U)+" * "+f3(r)+" / "+f3(Rsum)+" = "+f3(Us[i])+" V");
+  });
+  steps.push("回代验算：U1 + U2"+(Rs.length>2?" + U3":"")+" = "+Us.map(function(u){return f3(u);}).join(" + ")+" = "+f3(Us.reduce(function(a,b){return a+b;},0))+" V，应等于总电压 U = "+f3(U)+" V ✓");
+  steps.push("再验算：I * R = "+f3(I)+" A * "+f3(Rsum)+" Ω = "+f3(I*Rsum)+" V ✓");
+  var rows=[["等效电阻 R",fmtR(Rsum)],["回路电流 I",fmtI(I)]];
+  Us.forEach(function(u,i){ rows.push(["R"+(i+1)+" 分压 U"+(i+1),f3(u)+" V"]); });
+  rows.push(["总功率 P",f3(U*I)+" W"]);
+  var figs='<div class="figbox"><h3>串联电路原理图（数值来自本次计算）</h3>'+seriesSVG(U,Rs,I,Us)+'<p class="figcap">串联：电流只有一个回路，处处相等；各电阻电压按阻值比例分配，电压之和等于总电压。</p></div>';
+  renderOut("s-out",rows,steps,figs);
+}
+
+/* ---------- 1.3 并联 ---------- */
+function parallelSVG(U,Rs,Itot,Ibr){
+  var n=Rs.length, W=360, H=196, top=52, bot=158, xL=52, xR=322;
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="并联电路原理图">';
+  s+='<line x1="'+xL+'" y1="'+top+'" x2="'+xR+'" y2="'+top+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+xL+'" y1="'+bot+'" x2="'+xR+'" y2="'+bot+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+xL+'" y1="'+top+'" x2="'+xL+'" y2="'+bot+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+xR+'" y1="'+top+'" x2="'+xR+'" y2="96" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+(xR-15)+'" y1="96" x2="'+(xR+15)+'" y2="96" stroke="'+C_INK+'" stroke-width="3"/>';
+  s+='<line x1="'+(xR-7)+'" y1="104" x2="'+(xR+7)+'" y2="104" stroke="'+C_INK+'" stroke-width="3"/>';
+  s+='<line x1="'+xR+'" y1="104" x2="'+xR+'" y2="'+bot+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<text x="'+(xR-6)+'" y="86" font-size="13.5" font-weight="700" fill="'+C_INK+'" text-anchor="end">U = '+f3(U)+' V</text>';
+  var seg=(xR-xL)/(n+1);
+  for(var k=0;k<n;k++){
+    var bx=xL+seg*(k+1), midY=(top+bot)/2;
+    s+='<line x1="'+bx+'" y1="'+top+'" x2="'+bx+'" y2="'+(midY-20)+'" stroke="'+C_INK+'" stroke-width="2"/>';
+    s+='<rect x="'+(bx-11)+'" y="'+(midY-20)+'" width="22" height="40" fill="var(--card)" stroke="'+C_INK+'" stroke-width="2"/>';
+    s+='<line x1="'+bx+'" y1="'+(midY+20)+'" x2="'+bx+'" y2="'+bot+'" stroke="'+C_INK+'" stroke-width="2"/>';
+    s+=arrowHead(bx,top+16,90,C_I);
+    s+='<text x="'+(bx+6)+'" y="'+(top-22)+'" font-size="13" font-weight="700" fill="'+C_INK+'">R'+(k+1)+' = '+fmtR(Rs[k])+'</text>';
+    s+='<text x="'+(bx+6)+'" y="'+(top-6)+'" font-size="12.5" fill="'+C_I+'">I'+(k+1)+' = '+fmtI(Ibr[k])+'</text>';
+  }
+  s+='<text x="187" y="'+(bot+24)+'" font-size="13.5" font-weight="700" fill="'+C_I+'" text-anchor="middle">总电流 I = '+fmtI(Itot)+'（= 各支路电流之和）</text>';
+  return s+'</svg>';
+}
+function calcParallel(){
+  var Itot=gv("p-I"), Rs=[gv("p-R1"),gv("p-R2")];
+  if(!blank("p-R3")) Rs.push(gv("p-R3"));
+  if(isNaN(Itot)||Rs.some(isNaN)||Rs.some(function(r){return r<=0;})){ bad("p-out","请填总电流 I 和至少 R1、R2（电阻要大于 0）。"); return; }
+  var inv=Rs.reduce(function(a,r){return a+1/r;},0), Req=1/inv, U=Itot*Req;
+  var Ibr=Rs.map(function(r){return U/r;});
+  var steps=["已知：总电流 I = "+fmtI(Itot)+"，"+Rs.map(function(r,i){return "R"+(i+1)+" = "+fmtR(r);}).join("，")+"，并联连接。"];
+  steps.push("第 1 步：并联等效 1 / R = "+Rs.map(function(r){return "1 / "+f3(r);}).join(" + ")+" = "+f3(inv)+" S");
+  steps.push("        取倒数：R = 1 / "+f3(inv)+" = "+f3(Req)+" Ω（等效电阻比最小的支路电阻还小）");
+  steps.push("第 2 步：各支路电压相等，U = I * R = "+f3(Itot)+" A * "+f3(Req)+" Ω = "+f3(U)+" V");
+  Rs.forEach(function(r,i){
+    var others=Rs.filter(function(_,j){return j!==i;});
+    if(Rs.length===2) steps.push("第 "+(3+i)+" 步：分流 I"+(i+1)+" = I * R"+(i===0?2:1)+" / (R1 + R2) = "+f3(Itot)+" * "+f3(others[0])+" / "+f3(Rs[0]+Rs[1])+" = "+fmtI(Ibr[i])+"（也等于 U / R"+(i+1)+" = "+f3(U)+" / "+f3(r)+")");
+    else steps.push("第 "+(3+i)+" 步：支路电流 I"+(i+1)+" = U / R"+(i+1)+" = "+f3(U)+" V / "+f3(r)+" Ω = "+fmtI(Ibr[i]));
+  });
+  steps.push("回代验算：I1 + I2"+(Rs.length>2?" + I3":"")+" = "+Ibr.map(function(x){return f3(x);}).join(" + ")+" = "+f3(Ibr.reduce(function(a,b){return a+b;},0))+" A，应等于总电流 I = "+f3(Itot)+" A ✓");
+  var rows=[["等效电阻 R",fmtR(Req)],["支路电压 U",f3(U)+" V"]];
+  Ibr.forEach(function(x,i){ rows.push(["支路电流 I"+(i+1),fmtI(x)]); });
+  rows.push(["总功率 P",f3(U*Itot)+" W"]);
+  var figs='<div class="figbox"><h3>并联电路原理图（数值来自本次计算）</h3>'+parallelSVG(U,Rs,Itot,Ibr)+'<p class="figcap">并联：各支路电压相等；支路电阻越小，分到的电流越大；总电流等于各支路电流之和。</p></div>';
+  renderOut("p-out",rows,steps,figs);
+}
+
+/* ---------- 1.4 额定功率 ---------- */
+function calcRated(){
+  var P=gv("r-P"), R=gv("r-R");
+  if(isNaN(P)||isNaN(R)||P<=0||R<=0){ bad("r-out","请填额定功率 P 和电阻 R（都要大于 0）。"); return; }
+  var Imax=Math.sqrt(P/R), Umax=Math.sqrt(P*R);
+  var steps=["已知：额定功率 P = "+f3(P)+" W，R = "+fmtR(R)+"。电阻发热功率不能超过额定值。",
+    "第 1 步：由 P = I * I * R，移项得 I * I = P / R = "+f3(P)+" / "+f3(R)+" = "+f3(P/R),
+    "        开方：Imax = 根号("+f3(P/R)+") = "+fmtI(Imax),
+    "第 2 步：Umax = Imax * R = "+f3(Imax)+" A * "+f3(R)+" Ω = "+f3(Umax)+" V",
+    "        也可以直接算：Umax = 根号(P * R) = 根号("+f3(P)+" * "+f3(R)+") = 根号("+f3(P*R)+") = "+f3(Umax)+" V ✓",
+    "回代验算：P = Umax * Imax = "+f3(Umax)+" V * "+f3(Imax)+" A = "+f3(Umax*Imax)+" W，应等于额定功率 "+f3(P)+" W ✓"];
+  renderOut("r-out",[["最大电流 Imax",fmtI(Imax)],["最大电压 Umax",f3(Umax)+" V"]],steps,null);
+}
+
+/* ---------- 1.5 电位 ---------- */
+function calcPot(){
+  var E1=gv("v-E1"),E2=gv("v-E2"),R1=gv("v-R1"),R2=gv("v-R2");
+  if([E1,E2,R1,R2].some(isNaN)||R1<=0||R2<=0){ bad("v-out","请填 E1、E2、R1、R2（电阻大于 0）。"); return; }
+  var I=(E1-E2)/(R1+R2), VA=E2+I*R2, VA2=E1-I*R1;
+  var steps=["模板：E1 在上、E2 在下，两电源正极都朝上，中间经 R1（上段）、R2（下段）串联成回路，A 点在 R1 与 R2 之间，下端为参考点（电位 0）。",
+    "已知：E1 = "+f3(E1)+" V，E2 = "+f3(E2)+" V，R1 = "+fmtR(R1)+"，R2 = "+fmtR(R2)+"。",
+    "第 1 步：回路电流（沿回路一周，电压升 = 电压降）：I = (E1 - E2) / (R1 + R2)",
+    "        代入：I = ("+f3(E1)+" - "+f3(E2)+") / ("+f3(R1)+" + "+f3(R2)+") = "+f3(E1-E2)+" / "+f3(R1+R2)+" = "+fmtI(I)+"（正值表示实际方向与假设方向相同）",
+    "第 2 步：从 A 点沿 R2 向下走到参考点：VA = E2 + I * R2 = "+f3(E2)+" + "+f3(I)+" * "+f3(R2)+" = "+f3(E2)+" + "+f3(I*R2)+" = "+f3(VA)+" V",
+    "回代验算：换一条路，从上端往下走：VA = E1 - I * R1 = "+f3(E1)+" - "+f3(I)+" * "+f3(R1)+" = "+f3(VA2)+" V，两条路结果一致 ✓"];
+  renderOut("v-out",[["回路电流 I",fmtI(I)],["A 点电位 VA",f3(VA)+" V"]],steps,null);
+}
+</script>
+<script>
+"use strict";
+/* ---------- 3.1 复数换算 ---------- */
+var cvCurMode="rect";
+function cvMode(m){
+  cvCurMode=m;
+  $("cv-rect").style.display=(m==="rect")?"grid":"none";
+  $("cv-polar").style.display=(m==="polar")?"grid":"none";
+  $("cv-mode-rect").setAttribute("aria-pressed",m==="rect"?"true":"false");
+  $("cv-mode-polar").setAttribute("aria-pressed",m==="polar"?"true":"false");
+}
+$("cv-mode-rect").addEventListener("click",function(){cvMode("rect");});
+$("cv-mode-polar").addEventListener("click",function(){cvMode("polar");});
+function calcConv(){
+  var kind=$("cv-kind").value, sym=(kind==="V")?"u":"i", unit=kind;
+  var a,b,mag,ang,steps=[];
+  if(cvCurMode==="rect"){
+    a=gvRaw("cv-a"); b=gvRaw("cv-b");
+    if(isNaN(a)||isNaN(b)){ bad("cv-out","请填实部 a 和虚部 b（虚部可为负数）。"); return; }
+    mag=Math.sqrt(a*a+b*b); ang=angNorm(Math.atan2(b,a)*180/Math.PI);
+    steps.push("已知代数式："+sym+" 点 = "+f3(a)+" "+(b<0?"- j":"+"+" j").replace("++","+")+" "+f3(Math.abs(b))+" "+unit+"（下面逐步换成极坐标）");
+    steps[0]="已知："+sym+" 点 = "+f3(a)+" "+(b<0?"-":"+")+" j"+f3(Math.abs(b))+" "+unit+"（代数式）";
+    steps.push("第 1 步：模 = 根号(a * a + b * b) = 根号("+f3(a)+" * "+f3(a)+" + ("+f3(b)+") * ("+f3(b)+"))");
+    steps.push("        = 根号("+f3(a*a)+" + "+f3(b*b)+") = 根号("+f3(a*a+b*b)+") = "+f3(mag)+" "+unit);
+    var quad=(a>=0&&b>=0)?"第一象限":(a<0&&b>=0)?"第二象限":(a<0&&b<0)?"第三象限":"第四象限";
+    steps.push("第 2 步：角 φ = arctan(b / a)，先算参考角 arctan(|b / a|) = arctan("+f3(Math.abs(b/a))+") = "+f3(Math.abs(Math.atan(b/a)*180/Math.PI))+"°");
+    steps.push("        实部 a = "+f3(a)+"、虚部 b = "+f3(b)+"，在"+quad+"，atan2 给出的实际角 φ = "+fAng(ang)+"°");
+    steps.push("        极坐标式：= "+f3(mag)+"∠"+fAng(ang)+"° "+unit);
+  } else {
+    mag=gvRaw("cv-m"); ang=gvRaw("cv-ang");
+    if(isNaN(mag)||isNaN(ang)||mag<0){ bad("cv-out","请填模（不小于 0）和角度。"); return; }
+    var rad=ang*Math.PI/180; a=mag*Math.cos(rad); b=mag*Math.sin(rad);
+    steps.push("已知极坐标式：= "+f3(mag)+"∠"+fAng(ang)+"° "+unit);
+    steps.push("第 1 步：实部 a = 模 * cos(φ) = "+f3(mag)+" * cos("+fAng(ang)+"°) = "+f3(mag)+" * "+f3(Math.cos(rad))+" = "+f3(a));
+    steps.push("第 2 步：虚部 b = 模 * sin(φ) = "+f3(mag)+" * sin("+fAng(ang)+"°) = "+f3(mag)+" * "+f3(Math.sin(rad))+" = "+f3(b));
+    steps.push("        代数式：= "+f3(a)+" "+(b<0?"-":"+")+" j"+f3(Math.abs(b))+" "+unit);
+  }
+  var amp=mag*Math.SQRT2;
+  steps.push("第 3 步：相量是有效值，瞬时值的幅值 = 有效值 * 1.414 = "+f3(mag)+" * 1.414 = "+f3(amp)+" "+unit);
+  var inst=sym+"(t) = "+f3(amp)+" * sin(ωt "+(ang<0?"-":"+")+" "+fAng(Math.abs(ang))+"°) "+unit;
+  steps.push("第 4 步：瞬时值表达式（以 sin 为参考）："+inst);
+  steps.push("回代验算：把 t 取 ωt = 90° - ("+fAng(ang)+"°) 的瞬间，sin = 1，"+sym+" 应等于幅值 "+f3(amp)+" "+unit+"；另验算 根号(a²+b²) 已在第 1 步与模对上 ✓");
+  var rectStr=f3(a)+" "+(b<0?"-":"+")+" j"+f3(Math.abs(b))+" "+unit;
+  renderOut("cv-out",[["代数式",rectStr],["极坐标式",f3(mag)+"∠"+fAng(ang)+"° "+unit],["幅值（有效值*1.414）",f3(amp)+" "+unit],["瞬时值表达式",inst]],steps,null);
+}
+
+/* ---------- 3.2 相量图 + 波形 ---------- */
+function calcDiag(){
+  var U=gv("d-U"), phu=gvRaw("d-phu"), I=gv("d-I"), phi=gvRaw("d-phi");
+  if([U,phu,I,phi].some(isNaN)||U<0||I<0){ bad("d-out","请填 U、φu、I、φi（有效值不小于 0）。"); return; }
+  var Um=U*Math.SQRT2, Im=I*Math.SQRT2, d=angNorm(phu-phi);
+  var steps=["已知：U 点 = "+f3(U)+"∠"+fAng(phu)+"° V，I 点 = "+f3(I)+"∠"+fAng(phi)+"° A。",
+    "第 1 步：电压幅值 Um = "+f3(U)+" * 1.414 = "+f3(Um)+" V，u(t) = "+f3(Um)+" * sin(ωt "+(phu<0?"-":"+")+" "+fAng(Math.abs(phu))+"°) V",
+    "第 2 步：电流幅值 Im = "+f3(I)+" * 1.414 = "+f3(Im)+" A，i(t) = "+f3(Im)+" * sin(ωt "+(phi<0?"-":"+")+" "+fAng(Math.abs(phi))+"°) A",
+    "第 3 步：相位差 = φu - φi = "+fAng(phu)+"° - ("+fAng(phi)+"°) = "+fAng(d)+"°，"+(d>0?"电压超前电流 "+fAng(d)+"°":(d<0?"电压滞后电流 "+fAng(-d)+"°（即电流超前）":"电压电流同相")),
+    "画图说明：相量图向量长度按有效值比例（U : I = "+f3(U)+" : "+f3(I)+"，图内各自标注数值），角度按 φu、φi；波形图两条曲线横轴同为 ωt，幅值分别为 Um、Im。",
+    "回代验算：u(t) 的有效值 = Um / 1.414 = "+f3(Um)+" / 1.414 = "+f3(Um/Math.SQRT2)+" V = U ✓；波形上 u 与 i 过零点的先后与相位差 "+fAng(d)+"° 一致 ✓"];
+  var figs='<div class="figbox"><h3>相量图（由本次计算生成）</h3>'+phasorSVG(U,phu,I,phi,"电压电流相量图")+
+    '<p class="figcap">U、I 长度按同一比例尺（按较大者定标），角度为各自初相。</p></div>'+
+    '<div class="figbox"><h3>正弦波形图（横轴 ωt，0 到 720°）</h3>'+
+    waveSVG([{amp:Um,phaseDeg:phu,color:C_U,label:"u(t)"},{amp:Im,phaseDeg:phi,color:C_I,label:"i(t)"}],"电压电流波形图",240)+
+    '<p class="figcap">蓝：u(t)，幅值 '+f3(Um)+' V；橙：i(t)，幅值 '+f3(Im)+' A。两图共用同一比例尺，谁的幅值大谁的曲线高。</p></div>';
+  renderOut("d-out",[["u(t)",f3(Um)+" * sin(ωt "+(phu<0?"-":"+")+" "+fAng(Math.abs(phu))+"°) V"],["i(t)",f3(Im)+" * sin(ωt "+(phi<0?"-":"+")+" "+fAng(Math.abs(phi))+"°) A"],["相位差 φu-φi",fAng(d)+"°"]],steps,figs);
+}
+
+/* ---------- 3.3 单元件 ---------- */
+var elemType="R";
+function setElem(t){
+  elemType=t;
+  document.querySelectorAll("[data-elem]").forEach(function(b){ b.setAttribute("aria-pressed",b.getAttribute("data-elem")===t?"true":"false"); });
+  var lab=$("el-param-label"), sel=$("el-X-u");
+  if(t==="R"){ lab.textContent="电阻 R"; sel.innerHTML='<option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option>'; }
+  if(t==="L"){ lab.textContent="电感 L"; sel.innerHTML='<option value="1">H</option><option value="0.001">mH</option><option value="0.000001">uH</option>'; }
+  if(t==="C"){ lab.textContent="电容 C"; sel.innerHTML='<option value="1">F</option><option value="0.000001">uF</option><option value="0.000000001">nF</option>'; }
+}
+document.querySelectorAll("[data-elem]").forEach(function(b){ b.addEventListener("click",function(){ setElem(b.getAttribute("data-elem")); }); });
+function calcElem(){
+  var X=gv("el-X"), f=gv("el-f"), hasI=!blank("el-I"), hasU=!blank("el-U");
+  var I=gv("el-I"), U=gv("el-U"), phi=gvRaw("el-phi"); if(isNaN(phi)) phi=0;
+  if(isNaN(X)||X<=0){ bad("el-out","请先填元件参数（大于 0）。电感、电容还要填频率 f。"); return; }
+  var reactance, steps=[], rel="", phu;
+  if(elemType==="R"){
+    reactance=X; rel="电阻：电压与电流同相，φu = φi";
+    steps.push("已知：R = "+fmtR(X)+"，纯电阻元件。");
+    steps.push("第 1 步：电阻元件的电压电流关系与直流相同：U = I * R，相位相同。");
+  } else if(elemType==="L"){
+    if(isNaN(f)||f<=0){ bad("el-out","电感要填频率 f。"); return; }
+    reactance=2*Math.PI*f*X; rel="电感：电压超前电流 90°，φu = φi + 90°";
+    steps.push("已知：L = "+fmtL(X)+"，f = "+f3(f)+" Hz。");
+    steps.push("第 1 步：感抗 XL = 2 * π * f * L = 2 * 3.1416 * "+f3(f)+" * "+f3(X));
+    steps.push("        = "+f3(2*Math.PI*f)+" * "+f3(X)+" = "+f3(reactance)+" Ω（频率越高，感抗越大）");
+  } else {
+    if(isNaN(f)||f<=0){ bad("el-out","电容要填频率 f。"); return; }
+    reactance=1/(2*Math.PI*f*X); rel="电容：电流超前电压 90°，φu = φi - 90°";
+    steps.push("已知：C = "+fmtC(X)+"，f = "+f3(f)+" Hz。");
+    steps.push("第 1 步：容抗 XC = 1 / (2 * π * f * C) = 1 / (2 * 3.1416 * "+f3(f)+" * "+f3(X)+")");
+    steps.push("        = 1 / "+f3(2*Math.PI*f*X)+" = "+f3(reactance)+" Ω（频率越高，容抗越小）");
+  }
+  if(hasI&&!hasU){ U=I*reactance; steps.push("第 2 步：U = I * "+(elemType==="R"?"R":(elemType==="L"?"XL":"XC"))+" = "+f3(I)+" A * "+f3(reactance)+" Ω = "+f3(U)+" V"); }
+  else if(hasU&&!hasI){ I=U/reactance; steps.push("第 2 步：I = U / "+(elemType==="R"?"R":(elemType==="L"?"XL":"XC"))+" = "+f3(U)+" V / "+f3(reactance)+" Ω = "+fmtI(I)); }
+  else { bad("el-out","电流 I 和电压 U 只填一个，另一个会算出来。"); return; }
+  phu = elemType==="R"?phi:(elemType==="L"?angNorm(phi+90):angNorm(phi-90));
+  steps.push("第 3 步：相位关系 —— "+rel+"。已知 φi = "+fAng(phi)+"°，所以 φu = "+fAng(phu)+"°");
+  var Um=U*Math.SQRT2, Im=I*Math.SQRT2;
+  steps.push("第 4 步：瞬时值：u(t) = "+f3(Um)+" * sin(ωt "+(phu<0?"-":"+")+" "+fAng(Math.abs(phu))+"°) V，i(t) = "+f3(Im)+" * sin(ωt "+(phi<0?"-":"+")+" "+fAng(Math.abs(phi))+"°) A");
+  steps.push("回代验算：U / I = "+f3(U)+" / "+f3(I)+" = "+f3(U/I)+" Ω，应等于 "+(elemType==="R"?"R":(elemType==="L"?"XL":"XC"))+" = "+f3(reactance)+" Ω ✓");
+  var rows=[["电压有效值 U",f3(U)+" V"],["电流有效值 I",fmtI(I)],["相位关系",rel]];
+  if(elemType!=="R") rows.splice(1,0,[(elemType==="L"?"感抗 XL":"容抗 XC"),f3(reactance)+" Ω"]);
+  var figs='<div class="figbox"><h3>相量图与波形（由本次计算生成）</h3>'+phasorSVG(U,phu,I,phi,"单元件相量图")+
+    waveSVG([{amp:Um,phaseDeg:phu,color:C_U,label:"u(t)"},{amp:Im,phaseDeg:phi,color:C_I,label:"i(t)"}],"单元件波形图",230)+'</div>';
+  renderOut("el-out",rows,steps,figs);
+}
+</script>
+<script>
+"use strict";
+/* ---------- 3.4 RLC 串联 ---------- */
+function rlcPhasorSVG(U,I,UR,UL,UC,phiZ){
+  /* 以电流 I 为参考（水平向右），UR 沿 I，UL 向上，UC 向下，U 为合成 */
+  var W=360,H=280, ox=56, oy=200;
+  var maxV=Math.max(UR,UL,UC,U,1e-9), sc=140/maxV;
+  var xUR=ox+UR*sc, yTop=oy-UL*sc, yUC=oy+UC*sc;
+  var ux=ox+UR*sc, uy=oy-(UL-UC)*sc;
+  function seg(x1,y1,x2,y2,color,w){ return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+color+'" stroke-width="'+(w||2.4)+'"/>'; }
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="RLC 串联相量图">';
+  s+='<line x1="14" y1="'+oy+'" x2="348" y2="'+oy+'" stroke="'+C_GRID+'"/>';
+  s+='<line x1="'+ox+'" y1="16" x2="'+ox+'" y2="262" stroke="'+C_GRID+'"/>';
+  s+=seg(ox,oy,ox+I*0+150,oy,C_I,2.6)+arrowHead(ox+154,oy,0,C_I);
+  s+='<text x="'+(ox+158)+'" y="'+(oy+5)+'" font-size="14" font-weight="700" fill="'+C_I+'">I = '+f3(I)+' A（参考相量）</text>';
+  s+=seg(ox,oy,xUR,oy,C_U)+arrowHead(xUR,oy,0,C_U);
+  s+='<text x="'+((ox+xUR)/2)+'" y="'+(oy+20)+'" font-size="13.5" font-weight="700" fill="'+C_U+'" text-anchor="middle">UR = '+f3(UR)+' V</text>';
+  s+=seg(xUR,oy,xUR,yTop,"#7c3aed")+arrowHead(xUR,yTop,-90,"#7c3aed");
+  s+='<text x="'+(xUR+8)+'" y="'+((oy+yTop)/2)+'" font-size="13.5" font-weight="700" fill="#7c3aed">UL = '+f3(UL)+' V</text>';
+  s+=seg(xUR,yTop,xUR,yUC,C_A,1.6);
+  s+='<text x="'+(xUR+8)+'" y="'+((yTop+oy)/2+34)+'" font-size="12.5" fill="'+C_A+'">UL - UC 合成</text>';
+  s+=seg(ox,oy,ux,uy,C_U,3)+arrowHead(ux,uy,Math.atan2(-(uy-oy),ux-ox)*180/Math.PI,C_U);
+  s+='<text x="'+(ux+8)+'" y="'+(uy-4)+'" font-size="14.5" font-weight="700" fill="'+C_U+'">U = '+f3(U)+' V，φ = '+fAng(phiZ)+'°</text>';
+  s+='<text x="'+(xUR+8)+'" y="'+(yUC+4)+'" font-size="13.5" font-weight="700" fill="'+C_A+'">UC = '+f3(UC)+' V（自 UL 末端向下量）</text>';
+  return s+'</svg>';
+}
+function powerTriangleSVG(P,Q,S,phiZ){
+  var W=360,H=230, ox=52, oy=178;
+  var maxS=Math.max(Math.abs(P),Math.abs(Q),S,1e-9), sc=128/maxS;
+  var xP=ox+P*sc, yQ=oy-Q*sc;
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="功率三角形">';
+  s+='<line x1="14" y1="'+oy+'" x2="348" y2="'+oy+'" stroke="'+C_GRID+'"/>';
+  s+='<line x1="'+ox+'" y1="14" x2="'+ox+'" y2="206" stroke="'+C_GRID+'"/>';
+  s+='<line x1="'+ox+'" y1="'+oy+'" x2="'+xP+'" y2="'+oy+'" stroke="'+C_U+'" stroke-width="3"/>';
+  s+='<line x1="'+xP+'" y1="'+oy+'" x2="'+xP+'" y2="'+yQ+'" stroke="#7c3aed" stroke-width="3"/>';
+  s+='<line x1="'+ox+'" y1="'+oy+'" x2="'+xP+'" y2="'+yQ+'" stroke="'+C_I+'" stroke-width="3"/>';
+  s+='<text x="'+((ox+xP)/2)+'" y="'+(oy+22)+'" font-size="14" font-weight="700" fill="'+C_U+'" text-anchor="middle">P = '+f3(P)+' W</text>';
+  s+='<text x="'+(xP+8)+'" y="'+((oy+yQ)/2)+'" font-size="14" font-weight="700" fill="#7c3aed">Q = '+f3(Q)+' var</text>';
+  s+='<text x="'+((ox+xP)/2-6)+'" y="'+((oy+yQ)/2-8)+'" font-size="14" font-weight="700" fill="'+C_I+'" text-anchor="end">S = '+f3(S)+' VA</text>';
+  s+='<text x="'+(ox+34)+'" y="'+(oy-8)+'" font-size="13" fill="'+C_INK+'">φ = '+fAng(phiZ)+'°</text>';
+  return s+'</svg>';
+}
+function calcRLC(){
+  var U=gv("z-U"), f=gv("z-f"), R=gv("z-R"), L=gv("z-L"), C=gv("z-C"), cos2=gvRaw("z-cos2");
+  if([U,f,R,L,C].some(isNaN)||U<=0||f<=0||R<=0||L<=0||C<=0){ bad("z-out","请填 U、f、R、L、C（都要大于 0）。"); return; }
+  var XL=2*Math.PI*f*L, XC=1/(2*Math.PI*f*C), X=XL-XC;
+  var Zmag=Math.sqrt(R*R+X*X), phiZ=Math.atan2(X,R)*180/Math.PI;
+  var I=U/Zmag, UR=I*R, UL=I*XL, UC=I*XC;
+  var P=I*I*R, Q=I*I*X, S=U*I, cos1=R/Zmag;
+  var nature = X>0.001?"感性（XL > XC，电流滞后电压）":(X<-0.001?"容性（XC > XL，电流超前电压）":"阻性（XL = XC，串联谐振状态）");
+  var steps=["已知：U = "+f3(U)+" V，f = "+f3(f)+" Hz，R = "+fmtR(R)+"，L = "+fmtL(L)+"，C = "+fmtC(C)+"，RLC 串联。",
+    "第 1 步：感抗 XL = 2 * π * f * L = 2 * 3.1416 * "+f3(f)+" * "+f3(L)+" = "+f3(XL)+" Ω",
+    "第 2 步：容抗 XC = 1 / (2 * π * f * C) = 1 / (2 * 3.1416 * "+f3(f)+" * "+f3(C)+") = 1 / "+f3(2*Math.PI*f*C)+" = "+f3(XC)+" Ω",
+    "第 3 步：电抗 X = XL - XC = "+f3(XL)+" - "+f3(XC)+" = "+f3(X)+" Ω；阻抗 Z = R + j(XL - XC) = "+f3(R)+" "+(X<0?"-":"+")+" j"+f3(Math.abs(X))+" Ω",
+    "第 4 步：阻抗模 |Z| = 根号(R * R + X * X) = 根号("+f3(R*R)+" + "+f3(X*X)+") = 根号("+f3(R*R+X*X)+") = "+f3(Zmag)+" Ω",
+    "第 5 步：阻抗角 φ = arctan(X / R) = arctan("+f3(X)+" / "+f3(R)+") = "+fAng(phiZ)+"°，电路呈"+nature,
+    "第 6 步：电流 I = U / |Z| = "+f3(U)+" / "+f3(Zmag)+" = "+f3(I)+" A",
+    "第 7 步：各元件电压：UR = I * R = "+f3(I)+" * "+f3(R)+" = "+f3(UR)+" V；UL = I * XL = "+f3(I)+" * "+f3(XL)+" = "+f3(UL)+" V；UC = I * XC = "+f3(I)+" * "+f3(XC)+" = "+f3(UC)+" V",
+    "        注意 UL、UC 都可能大于总电压 U，这是相量相加（UL 与 UC 反相、先抵消）的结果，不是算错。",
+    "第 8 步：有功功率 P = I * I * R = "+f3(I)+" * "+f3(I)+" * "+f3(R)+" = "+f3(P)+" W",
+    "第 9 步：无功功率 Q = I * I * (XL - XC) = "+f3(I*I)+" * "+f3(X)+" = "+f3(Q)+" var（正 = 感性无功，负 = 容性无功）",
+    "第 10 步：视在功率 S = U * I = "+f3(U)+" * "+f3(I)+" = "+f3(S)+" VA；功率因数 cosφ = R / |Z| = "+f3(R)+" / "+f3(Zmag)+" = "+f3(cos1),
+    "回代验算 1：根号(UR² + (UL - UC)²) = 根号("+f3(UR*UR)+" + "+f3((UL-UC)*(UL-UC))+") = "+f3(Math.sqrt(UR*UR+(UL-UC)*(UL-UC)))+" V，应等于 U = "+f3(U)+" V ✓",
+    "回代验算 2：根号(P² + Q²) = 根号("+f3(P*P)+" + "+f3(Q*Q)+") = "+f3(Math.sqrt(P*P+Q*Q))+" VA，应等于 S = "+f3(S)+" VA ✓"];
+  var rows=[["感抗 XL",f3(XL)+" Ω"],["容抗 XC",f3(XC)+" Ω"],["阻抗 Z",f3(R)+" "+(X<0?"-":"+")+" j"+f3(Math.abs(X))+" Ω"],["|Z| / φ",f3(Zmag)+" Ω / "+fAng(phiZ)+"°"],["电流 I",f3(I)+" A"],["UR / UL / UC",f3(UR)+" V / "+f3(UL)+" V / "+f3(UC)+" V"],["P / Q / S",f3(P)+" W / "+f3(Q)+" var / "+f3(S)+" VA"],["功率因数 cosφ",f3(cos1)+"（"+nature.split("（")[0]+"）"]];
+  var note="";
+  if(!isNaN(cos2)&&cos2>cos1&&cos2<1&&cos2>0){
+    var phi1=Math.acos(cos1), phi2=Math.acos(cos2);
+    var Cc=P*(Math.tan(phi1)-Math.tan(phi2))/(2*Math.PI*f*U*U);
+    steps.push("功率因数提高（并联电容）：目标 cosφ2 = "+f3(cos2)+"，φ1 = "+fAng(phi1*180/Math.PI)+"°，φ2 = "+fAng(phi2*180/Math.PI)+"°");
+    steps.push("        C = P * (tanφ1 - tanφ2) / (2 * π * f * U * U) = "+f3(P)+" * ("+f3(Math.tan(phi1))+" - "+f3(Math.tan(phi2))+") / (2 * 3.1416 * "+f3(f)+" * "+f3(U*U)+")");
+    steps.push("        = "+f3(P*(Math.tan(phi1)-Math.tan(phi2)))+" / "+f3(2*Math.PI*f*U*U)+" = "+fmtC(C)+"，并联在负载两端");
+    steps.push("        原理：电容发出容性无功，抵消一部分感性无功，P 不变、Q 减小、S 减小、线路电流减小。");
+    rows.push(["提高到 cosφ="+f3(cos2)+" 需并联电容",fmtC(C)]);
+  } else if(!isNaN(cos2)){ note='<div class="warn">目标功率因数要填在当前 cosφ（'+f3(cos1)+'）与 1 之间才计算并联电容。</div>'; }
+  var figs='<div class="figbox"><h3>电压相量图（以电流 I 为参考）</h3>'+rlcPhasorSVG(U,I,UR,UL,UC,phiZ)+
+    '<p class="figcap">UR 与 I 同相，UL 超前 I 90°，UC 滞后 I 90°；U 是 UR 与 (UL - UC) 的相量和。</p></div>'+
+    '<div class="figbox"><h3>功率三角形</h3>'+powerTriangleSVG(P,Q,S,phiZ)+
+    '<p class="figcap">S² = P² + Q²；cosφ = P / S。Q 为'+(Q>=0?"正（感性）":"负（容性），三角形向下")+'。</p></div>';
+  renderOut("z-out",rows,steps,figs,note);
+}
+
+/* ---------- 7.1 二极管 ---------- */
+function calcDiode(){
+  var E=gv("dd-E"), Um=gv("dd-Um");
+  if(isNaN(E)||isNaN(Um)||Um<=0){ bad("dd-out","请填 E 和输入幅值 Um（Um 大于 0）。"); return; }
+  var cross=Math.asin(Math.min(1,Math.max(-1,E/Um)))*180/Math.PI;
+  var steps=["电路：输入 ui = "+f3(Um)+" * sin(ωt) V 经理想二极管与直流电源 E = "+f3(E)+" V 构成限幅电路，输出 uo 取自二极管支路。",
+    "判断方法：理想二极管导通时压降为 0、截止时电流为 0。比较 ui 与 E 的大小即可判断通断。",
+    "第 1 步：当 ui > E = "+f3(E)+" V 时：若二极管导通，uo 会被钳在 E，与 ui > E 矛盾，所以二极管截止，输出跟随输入：uo = ui。",
+    "第 2 步：当 ui < E = "+f3(E)+" V 时：二极管正向导通（理想管压降 0），输出被电源钳位：uo = E = "+f3(E)+" V。",
+    "第 3 步：交界点：ui = E 时 sin(ωt) = E / Um = "+f3(E)+" / "+f3(Um)+" = "+f3(E/Um)+"，ωt = "+fAng(cross)+"°（及 180° - "+fAng(cross)+"° = "+fAng(180-cross)+"°）。每个周期内，ωt 在 "+fAng(cross)+"° 到 "+fAng(180-cross)+"° 之间 uo 跟随 ui 的峰段，其余时间 uo = "+f3(E)+" V。",
+    "结论：uo = ui（ui > "+f3(E)+" V 时）；uo = "+f3(E)+" V（ui < "+f3(E)+" V 时）。这是一个下限幅（只保留高于 E 的部分、下方削平在 E）。",
+    "回代验算：取 ui 峰值 "+f3(Um)+" V > E，uo = ui = "+f3(Um)+" V ✓；取 ui = 0 < E，uo = E = "+f3(E)+" V ✓；取 ui = -"+f3(Um)+" V < E，uo 仍为 "+f3(E)+" V ✓"];
+  var figs='<div class="figbox"><h3>uo 波形示意（由 Um、E 生成）</h3>'+
+    waveSVG([{amp:Um,phaseDeg:0,color:C_GRID,label:"ui（参考）"},{amp:Um,phaseDeg:0,color:C_I,label:"uo",clip:{E:E}}],"二极管限幅波形",240)+
+    '<p class="figcap">橙色 uo：高于 E 的部分跟随 ui，低于 E 的部分被钳在 E = '+f3(E)+' V；灰色虚线为输入 ui 作对照。</p></div>';
+  renderOut("dd-out",[["导通/截止判据","ui 与 E 比较"],["uo（ui > "+f3(E)+" V）","uo = ui"],["uo（ui < "+f3(E)+" V）","uo = "+f3(E)+" V"],["交界 ωt",fAng(cross)+"° 与 "+fAng(180-cross)+"°"]],steps,figs);
+}
+
+/* ---------- 7.3 稳压管 ---------- */
+var zenMode="a";
+document.querySelectorAll("[data-zen]").forEach(function(b){ b.addEventListener("click",function(){
+  zenMode=b.getAttribute("data-zen");
+  document.querySelectorAll("[data-zen]").forEach(function(x){ x.setAttribute("aria-pressed",x===b?"true":"false"); });
+}); });
+function calcZener(){
+  var V1=gv("zn-1"), V2=gv("zn-2");
+  if(isNaN(V1)||isNaN(V2)||V1<=0||V2<=0){ bad("zn-out","请填 Vz1、Vz2（大于 0）。"); return; }
+  var Uo, steps=[], name="";
+  if(zenMode==="a"){ name="(a) 两管反向串联"; Uo=V1+V2;
+    steps=["接法 (a)：两只稳压管反向（稳压方向）串联，两管都工作在反向击穿稳压状态。",
+      "第 1 步：串联电压相加：Uo = Vz1 + Vz2 = "+f3(V1)+" + "+f3(V2)+" = "+f3(Uo)+" V",
+      "回代验算：Uo - Vz1 = "+f3(Uo-V1)+" V = Vz2 ✓"];
+  } else if(zenMode==="b"){ name="(b) 两管反向并联"; Uo=Math.min(V1,V2);
+    steps=["接法 (b)：两只稳压管反向并联。并联时两端电压必须相同，稳压值较小的那只先击穿，把电压钳在较小值上，另一只达不到击穿电压、保持截止。",
+      "第 1 步：Uo = min(Vz1, Vz2) = min("+f3(V1)+", "+f3(V2)+") = "+f3(Uo)+" V",
+      "回代验算：Uo = "+f3(Uo)+" V < 较大的 Vz = "+f3(Math.max(V1,V2))+" V，另一只确实不击穿 ✓"];
+  } else if(zenMode==="c"){ name="(c) 一反一正串联"; Uo=V1+0.7;
+    steps=["接法 (c)：一只反向接（稳压 Vz1），一只正向接（当普通二极管用，正向压降 0.7 V），串联。",
+      "第 1 步：Uo = Vz1 + 正向压降 = "+f3(V1)+" + 0.7 = "+f3(Uo)+" V",
+      "（若题目把正向的那只记为 Vz2 的管子，其稳压值 Vz2 = "+f3(V2)+" V 在此接法中用不上，用的是它的正向导通压降 0.7 V。）",
+      "回代验算：Uo - 0.7 = "+f3(Uo-0.7)+" V = Vz1 ✓"];
+  } else { name="(d) 正向导通"; Uo=0.7;
+    steps=["接法 (d)：稳压管正向接法，工作状态等同普通二极管正向导通，输出为正向导通压降。",
+      "第 1 步：Uo = 0.7 V（硅管正向导通压降，与 Vz1 = "+f3(V1)+" V、Vz2 = "+f3(V2)+" V 的稳压值无关，因为没有反向击穿）",
+      "回代验算：正向导通压降固定约 0.7 V ✓"];
+  }
+  renderOut("zn-out",[["接法",name],["输出电压 Uo",f3(Uo)+" V"]],steps,null);
+}
+
+/* ---------- 例 8-1 三极管 ---------- */
+function bjtLoadLineSVG(UCC,RC,ICsat,IC,UCE,IB){
+  var W=360,H=280, ox=48, oy=228, x1=330, y1=26;
+  var maxIC=ICsat*1.18, maxU=UCC*1.08;
+  function X(u){ return ox+(x1-ox)*u/maxU; } function Y(c){ return oy-(oy-y1)*c/maxIC; }
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="负载线与输出特性">';
+  for(var g=0; g<=4; g++){ var gy=oy-(oy-y1)*g/4; s+='<line x1="'+ox+'" y1="'+gy+'" x2="'+x1+'" y2="'+gy+'" stroke="'+C_GRID+'" stroke-width="0.7"/>'; }
+  s+='<line x1="'+ox+'" y1="'+oy+'" x2="'+x1+'" y2="'+oy+'" stroke="'+C_INK+'" stroke-width="1.6"/>';
+  s+='<line x1="'+ox+'" y1="'+oy+'" x2="'+ox+'" y2="'+(y1-8)+'" stroke="'+C_INK+'" stroke-width="1.6"/>';
+  s+='<text x="'+(x1-2)+'" y="'+(oy+20)+'" font-size="13" fill="'+C_INK+'" text-anchor="end">UCE / V</text>';
+  s+='<text x="'+(ox-6)+'" y="'+(y1-2)+'" font-size="13" fill="'+C_INK+'" text-anchor="end">IC / mA</text>';
+  s+='<text x="'+ox+'" y="'+(oy+20)+'" font-size="12" fill="'+C_INK+'" text-anchor="middle">0</text>';
+  /* 输出特性曲线示意：IB=25/50/75/100uA，饱和电流按 beta*IB 比例画平坦段 */
+  var ibs=[25,50,75,100], betaGuess=IC>0&&IB>0?(IC/IB):40;
+  ibs.forEach(function(ib){
+    var icLev=Math.min(ib*1e-6*betaGuess*1000, maxIC*1.04); /* mA */
+    var knee=1.1, pts=[];
+    for(var u=0;u<=maxU;u+=maxU/40){ var c=icLev*(u<knee?(0.25+0.75*u/knee):(1+0.012*(u-knee))); pts.push((u===0?"M":"L")+X(u).toFixed(1)+","+Y(Math.min(c,maxIC)).toFixed(1)); }
+    var isQ=Math.abs(ib*1e-6-IB)<IB*0.3;
+    s+='<path d="'+pts.join(" ")+'" fill="none" stroke="'+(isQ?C_I:C_GRID)+'" stroke-width="'+(isQ?2.4:1.4)+'"/>';
+    s+='<text x="'+(x1-2)+'" y="'+(Y(Math.min(icLev,maxIC))-5)+'" font-size="11.5" fill="'+(isQ?C_I:C_INK)+'" text-anchor="end">IB = '+ib+' uA</text>';
+  });
+  /* 负载线 */
+  s+='<line x1="'+X(0)+'" y1="'+Y(ICsat)+'" x2="'+X(UCC)+'" y2="'+Y(0)+'" stroke="'+C_U+'" stroke-width="2.6"/>';
+  s+='<circle cx="'+X(UCC)+'" cy="'+Y(0)+'" r="4" fill="'+C_U+'"/><circle cx="'+X(0)+'" cy="'+Y(ICsat)+'" r="4" fill="'+C_U+'"/>';
+  s+='<text x="'+X(UCC)+'" y="'+(Y(0)-8)+'" font-size="12.5" font-weight="700" fill="'+C_U+'" text-anchor="end">('+f3(UCC)+' V, 0)</text>';
+  s+='<text x="'+(X(0)+6)+'" y="'+(Y(ICsat)-6)+'" font-size="12.5" font-weight="700" fill="'+C_U+'">(0, '+f3(ICsat*1000)+' mA)</text>';
+  /* Q 点 */
+  if(IC<=ICsat&&UCE>=0){
+    s+='<line x1="'+X(UCE)+'" y1="'+Y(IC)+'" x2="'+X(UCE)+'" y2="'+oy+'" stroke="'+C_I+'" stroke-dasharray="4 3"/>';
+    s+='<line x1="'+X(UCE)+'" y1="'+Y(IC)+'" x2="'+ox+'" y2="'+Y(IC)+'" stroke="'+C_I+'" stroke-dasharray="4 3"/>';
+    s+='<circle cx="'+X(UCE)+'" cy="'+Y(IC)+'" r="5" fill="'+C_I+'"/>';
+    s+='<text x="'+(X(UCE)+8)+'" y="'+(Y(IC)-8)+'" font-size="14" font-weight="700" fill="'+C_I+'">Q</text>';
+    s+='<text x="'+X(UCE)+'" y="'+(oy+20)+'" font-size="12.5" font-weight="700" fill="'+C_I+'" text-anchor="middle">'+f3(UCE)+' V</text>';
+    s+='<text x="'+(ox-6)+'" y="'+(Y(IC)+4)+'" font-size="12.5" font-weight="700" fill="'+C_I+'" text-anchor="end">'+f3(IC*1000)+'</text>';
+  }
+  return s+'</svg>';
+}
+function bjtCircuitSVG(UCC,RB,RC,IB,IC,UCE){
+  var W=360,H=270,s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="固定偏置放大电路">';
+  var rail=34, gnd=238, bx=150, cx=238;
+  s+='<line x1="40" y1="'+rail+'" x2="310" y2="'+rail+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<text x="354" y="'+(rail-8)+'" font-size="14" font-weight="700" fill="'+C_INK+'" text-anchor="end">+UCC = '+f3(UCC)+' V</text>';
+  /* RB 支路 */
+  s+='<rect x="'+(bx-10)+'" y="86" width="20" height="46" fill="var(--card)" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+bx+'" y1="'+rail+'" x2="'+bx+'" y2="86" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+bx+'" y1="132" x2="'+bx+'" y2="168" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<text x="'+(bx-16)+'" y="112" font-size="13.5" font-weight="700" fill="'+C_INK+'" text-anchor="end">RB = '+fmtR(RB)+'</text>';
+  s+=arrowHead(bx,80,90,C_I)+'<text x="'+(bx+10)+'" y="72" font-size="12.5" font-weight="700" fill="'+C_I+'">IB = '+fmtI(IB)+'</text>';
+  /* RC 支路 */
+  s+='<rect x="'+(cx-10)+'" y="86" width="20" height="46" fill="var(--card)" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+cx+'" y1="'+rail+'" x2="'+cx+'" y2="86" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+cx+'" y1="132" x2="'+cx+'" y2="160" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<text x="'+(cx+16)+'" y="112" font-size="13.5" font-weight="700" fill="'+C_INK+'">RC = '+fmtR(RC)+'</text>';
+  s+=arrowHead(cx,80,90,C_I)+'<text x="'+(cx+10)+'" y="72" font-size="12.5" font-weight="700" fill="'+C_I+'">IC = '+fmtI(IC)+'</text>';
+  /* 三极管符号：基极横线、集电极、发射极箭头 */
+  s+='<line x1="'+bx+'" y1="168" x2="196" y2="168" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="196" y1="146" x2="196" y2="190" stroke="'+C_INK+'" stroke-width="3.4"/>';
+  s+='<line x1="196" y1="156" x2="'+cx+'" y2="160" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="196" y1="180" x2="222" y2="'+gnd+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<polygon points="213,208 224,224 205,222" fill="'+C_INK+'"/>';
+  s+='<line x1="40" y1="'+gnd+'" x2="310" y2="'+gnd+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="222" y1="'+gnd+'" x2="222" y2="'+gnd+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<text x="175" y="'+(gnd+20)+'" font-size="13" fill="'+C_INK+'" text-anchor="middle">地（0 V）</text>';
+  s+='<text x="120" y="162" font-size="12.5" fill="'+C_U+'">b</text><text x="252" y="152" font-size="12.5" fill="'+C_U+'">c</text><text x="230" y="206" font-size="12.5" fill="'+C_U+'">e</text>';
+  s+='<text x="262" y="196" font-size="13.5" font-weight="700" fill="'+C_U+'">UCE = '+f3(UCE)+' V</text>';
+  s+='<text x="262" y="214" font-size="12" fill="'+C_INK+'">（c 到 e 的电压）</text>';
+  return s+'</svg>';
+}
+function calcBJT(){
+  var UCC=gv("b-UCC"), RC=gv("b-RC"), RB=gv("b-RB"), beta=gvRaw("b-beta"), UBE=gv("b-UBE");
+  if(isNaN(UBE)) UBE=0;
+  if([UCC,RC,RB,beta].some(isNaN)||UCC<=0||RC<=0||RB<=0||beta<=0){ bad("b-out","请填 UCC、RC、RB、β（都要大于 0）。"); return; }
+  var IB=(UCC-UBE)/RB, IC=beta*IB, UCE=UCC-IC*RC, ICsat=UCC/RC, sat=IC>ICsat;
+  var steps=["已知：UCC = "+f3(UCC)+" V，RC = "+fmtR(RC)+"，RB = "+fmtR(RB)+"，β = "+f3(beta)+(UBE===0?"，UBE 忽略不计。":"，UBE = "+f3(UBE)+" V。"),
+    "第 1 步：基极回路：UCC = IB * RB + UBE，移项得 IB = (UCC - UBE) / RB",
+    UBE===0?"        UBE 忽略：IB = UCC / RB = "+f3(UCC)+" V / "+f3(RB)+" Ω = "+f3(IB)+" A = "+fmtI(IB)
+            :"        代入：IB = ("+f3(UCC)+" - "+f3(UBE)+") / "+f3(RB)+" = "+f3(UCC-UBE)+" / "+f3(RB)+" = "+f3(IB)+" A = "+fmtI(IB),
+    "第 2 步：放大区电流关系：IC = β * IB = "+f3(beta)+" * "+f3(IB)+" A = "+f3(IC)+" A = "+fmtI(IC),
+    "第 3 步：集电极回路：UCE = UCC - IC * RC = "+f3(UCC)+" - "+f3(IC)+" * "+f3(RC)+" = "+f3(UCC)+" - "+f3(IC*RC)+" = "+f3(UCE)+" V",
+    "第 4 步：饱和判断：ICsat = UCC / RC = "+f3(UCC)+" / "+f3(RC)+" = "+f3(ICsat)+" A = "+fmtI(ICsat)];
+  if(sat){ steps.push("        算出的 IC = "+fmtI(IC)+" > ICsat = "+fmtI(ICsat)+"，假设的放大状态不成立：管子已进入饱和区，实际 IC ≈ ICsat = "+fmtI(ICsat)+"，UCE ≈ 0 V（饱和压降很小），Q 点落在负载线最上端。"); }
+  else { steps.push("        IC = "+fmtI(IC)+" < ICsat = "+fmtI(ICsat)+"，且 UCE = "+f3(UCE)+" V > 0，工作在放大区，估算成立。"); }
+  steps.push("第 5 步：负载线（图解法）：由 UCE = UCC - IC * RC，取两点连线：IC = 0 时 UCE = UCC = "+f3(UCC)+" V，得点 ("+f3(UCC)+" V, 0)；UCE = 0 时 IC = UCC / RC = "+fmtI(ICsat)+"，得点 (0, "+f3(ICsat*1000)+" mA)。");
+  steps.push("        负载线与 IB = "+fmtI(IB)+" 那条输出特性曲线的交点就是 Q 点，应与估算的 ("+f3(UCE)+" V, "+f3(IC*1000)+" mA) 对上。");
+  steps.push("回代验算：IC * RC + UCE = "+f3(IC*RC)+" + "+f3(UCE)+" = "+f3(IC*RC+UCE)+" V，应等于 UCC = "+f3(UCC)+" V ✓；β * IB = "+f3(beta)+" * "+f3(IB)+" = "+f3(beta*IB)+" A = IC ✓");
+  var note=sat?'<div class="warn">已进入饱和区：实际 IC ≈ '+fmtI(ICsat)+'，UCE ≈ 0 V。下面图中的 Q 点按饱和位置理解（负载线顶端）。</div>'
+              :'<div class="oknote">工作在放大区，静态工作点 Q = ('+f3(UCE)+' V, '+f3(IC*1000)+' mA)。</div>';
+  var figs='<div class="figbox"><h3>负载线与输出特性（由本次计算生成）</h3>'+bjtLoadLineSVG(UCC,RC,ICsat,Math.min(IC,ICsat),sat?0:UCE,IB)+
+    '<p class="figcap">蓝线为直流负载线，两截距 ('+f3(UCC)+' V, 0) 与 (0, '+f3(ICsat*1000)+' mA)；灰线为 IB = 25、50、75、100 uA 特性曲线示意（按 β 比例画平坦段），红点 Q 为负载线与 IB = '+fmtI(IB)+' 曲线的交点。</p></div>'+
+    '<div class="figbox"><h3>固定偏置放大电路（直流通路标注）</h3>'+bjtCircuitSVG(UCC,RB,RC,IB,IC,sat?0:UCE)+'</div>';
+  renderOut("b-out",[["基极电流 IB",fmtI(IB)],["集电极电流 IC",fmtI(IC)+(sat?"（已饱和，实际≈"+fmtI(ICsat)+"）":"")],["管压降 UCE",f3(UCE)+" V"],["饱和电流 ICsat",fmtI(ICsat)],["负载线截距","("+f3(UCC)+" V, 0) 与 (0, "+f3(ICsat*1000)+" mA)"]],steps,figs,note);
+}
+</script>
+<script>
+"use strict";
+/* ================= V2 图形修复：覆盖 V1 的绘图与相关计算 ================= */
+C_U="var(--blue)"; C_I="var(--orange)"; C_A="var(--accent)";
+var C_UL="var(--violet)";
+function cl2(x,a,b){ return Math.max(a,Math.min(b,x)); }
+function phasorOneSVG(mag,ang,color,label,unit){
+  var W=360,H=264,cx=180,cy=136,len=102;
+  var a=ang*Math.PI/180, x=cx+len*Math.cos(a), y=cy-len*Math.sin(a);
+  var lx=cl2(cx+(len+20)*Math.cos(a),44,316), ly=cl2(cy-(len+20)*Math.sin(a),16,248);
+  var anch=Math.cos(a)>0.35?"start":(Math.cos(a)<-0.35?"end":"middle");
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(label)+' 相量图">';
+  s+='<line x1="18" y1="'+cy+'" x2="344" y2="'+cy+'" stroke="'+C_GRID+'"/>';
+  s+='<line x1="'+cx+'" y1="12" x2="'+cx+'" y2="252" stroke="'+C_GRID+'"/>';
+  s+='<text x="340" y="'+(cy-6)+'" font-size="12" fill="'+C_INK+'" text-anchor="end">+1</text>';
+  s+='<text x="'+(cx+6)+'" y="24" font-size="12" fill="'+C_INK+'">+j</text>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="3" fill="'+C_INK+'"/>';
+  s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+x+'" y2="'+y+'" stroke="'+color+'" stroke-width="2.8"/>'+arrowHead(x,y,ang,color);
+  s+='<text x="'+lx+'" y="'+ly+'" font-size="15" font-weight="700" fill="'+color+'" text-anchor="'+anch+'">'+esc(label)+' = '+f3(mag)+' '+unit+' ∠ '+fAng(ang)+'°</text>';
+  return s+'</svg>';
+}
+function phasorMultiSVG(vecs){
+  var W=360,H=264,cx=180,cy=136,maxV=1e-9;
+  vecs.forEach(function(v){ maxV=Math.max(maxV,v.mag); });
+  var sc=100/maxV, s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="多相量图">';
+  s+='<line x1="18" y1="'+cy+'" x2="344" y2="'+cy+'" stroke="'+C_GRID+'"/>';
+  s+='<line x1="'+cx+'" y1="12" x2="'+cx+'" y2="252" stroke="'+C_GRID+'"/>';
+  s+='<text x="340" y="'+(cy-6)+'" font-size="12" fill="'+C_INK+'" text-anchor="end">+1</text>';
+  s+='<text x="'+(cx+6)+'" y="24" font-size="12" fill="'+C_INK+'">+j</text>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="3" fill="'+C_INK+'"/>';
+  vecs.forEach(function(v){
+    var a=v.ang*Math.PI/180, len=Math.max(v.mag*sc,5);
+    var x=cx+len*Math.cos(a), y=cy-len*Math.sin(a);
+    var lx=cl2(cx+(len+18)*Math.cos(a),40,320), ly=cl2(cy-(len+18)*Math.sin(a),15,249);
+    var anch=Math.cos(a)>0.35?"start":(Math.cos(a)<-0.35?"end":"middle");
+    s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+x+'" y2="'+y+'" stroke="'+v.color+'" stroke-width="2.6"/>'+arrowHead(x,y,v.ang,v.color);
+    s+='<text x="'+lx+'" y="'+ly+'" font-size="14" font-weight="700" fill="'+v.color+'" text-anchor="'+anch+'">'+esc(v.label)+'</text>';
+  });
+  return s+'</svg>';
+}
+function waveDualSVG(items){
+  var W=360, panelH=124, gap=12, H=items.length*panelH+(items.length-1)*gap+4;
+  var x0=30,x1=352, s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="正弦波形图（分栏独立比例）">';
+  items.forEach(function(it,idx){
+    var top=idx*(panelH+gap), midY=top+panelH/2+12, maxA=Math.max(Math.abs(it.amp),1e-12), sc=(panelH/2-24)/maxA;
+    function X(dg){ return x0+(x1-x0)*dg/720; } function Y(v){ return midY-v*sc; }
+    s+='<text x="'+x0+'" y="'+(top+14)+'" font-size="13" font-weight="700" fill="'+it.color+'">'+esc(it.label)+'　幅值 '+f3(Math.abs(it.amp))+' '+esc(it.unit||"")+'（本栏单独比例尺）</text>';
+    s+='<line x1="'+x0+'" y1="'+midY+'" x2="'+x1+'" y2="'+midY+'" stroke="'+C_GRID+'"/>';
+    s+='<line x1="'+x0+'" y1="'+(top+22)+'" x2="'+x0+'" y2="'+(top+panelH-14)+'" stroke="'+C_GRID+'"/>';
+    [0,360,720].forEach(function(dg){ s+='<text x="'+X(dg)+'" y="'+(top+panelH-2)+'" font-size="11" fill="'+C_INK+'" text-anchor="middle">'+dg+'°</text>'; });
+    var pts=[];
+    for(var dg=0;dg<=720;dg+=3){ var v=it.amp*Math.sin((dg+it.phaseDeg)*Math.PI/180); pts.push((dg===0?"M":"L")+X(dg).toFixed(1)+","+Y(v).toFixed(1)); }
+    s+='<path d="'+pts.join(" ")+'" fill="none" stroke="'+it.color+'" stroke-width="2.2"/>';
+  });
+  return s+'</svg>';
+}
+/* 波形：数值标注移入图例行，曲线上不再写字（修 7.1 的 ui/uo 标签重叠） */
+function waveSVG(items,title,height){
+  var W=360,H=height||220, midY=H/2-6, x0=34, x1=352;
+  var maxA=1; items.forEach(function(it){ maxA=Math.max(maxA,Math.abs(it.amp)); if(it.clip) maxA=Math.max(maxA,Math.abs(it.clip.E)); });
+  var sc=(H/2-34)/maxA;
+  function X(deg){ return x0+(x1-x0)*deg/720; }
+  function Y(v){ return midY-v*sc; }
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(title)+'">';
+  s+='<line x1="'+x0+'" y1="'+midY+'" x2="'+x1+'" y2="'+midY+'" stroke="'+C_GRID+'"/>';
+  s+='<line x1="'+x0+'" y1="8" x2="'+x0+'" y2="'+(H-26)+'" stroke="'+C_GRID+'"/>';
+  [0,180,360,540,720].forEach(function(dg){ s+='<text x="'+X(dg)+'" y="'+(H-8)+'" font-size="11.5" fill="'+C_INK+'" text-anchor="middle">'+dg+'°</text>'; });
+  s+='<text x="'+(x1-2)+'" y="'+(midY-6)+'" font-size="12" fill="'+C_INK+'" text-anchor="end">ωt</text>';
+  items.forEach(function(it){
+    if(it.clip){ s+='<line x1="'+x0+'" y1="'+Y(it.clip.E)+'" x2="'+x1+'" y2="'+Y(it.clip.E)+'" stroke="'+C_GRID+'" stroke-dasharray="4 3"/>'; }
+    var pts=[];
+    for(var dg=0;dg<=720;dg+=3){
+      var v=it.amp*Math.sin((dg+it.phaseDeg)*Math.PI/180);
+      if(it.clip) v=Math.max(v,it.clip.E);
+      pts.push((dg===0?"M":"L")+X(dg).toFixed(1)+","+Y(v).toFixed(1));
+    }
+    s+='<path d="'+pts.join(" ")+'" fill="none" stroke="'+it.color+'" stroke-width="2.2"/>';
+  });
+  s+='</svg>';
+  var lg='<div class="legend">';
+  items.forEach(function(it){ lg+='<span style="color:'+it.color+'"><span class="sw"></span>'+esc(it.label)+'：幅值 '+f3(Math.abs(it.amp))+' V</span>'; });
+  items.forEach(function(it){ if(it.clip) lg+='<span><span class="sw" style="background:'+C_GRID+'"></span>虚线：钳位电平 E = '+f3(it.clip.E)+' V</span>'; });
+  return s+lg+'</div>';
+}
+/* ---------- 3.2 覆盖：U、I 各自一张相量图，波形分栏归一化 ---------- */
+function calcDiag(){
+  var U=gv("d-U"), phu=gvRaw("d-phu"), I=gv("d-I"), phi=gvRaw("d-phi");
+  if([U,phu,I,phi].some(isNaN)||U<0||I<0){ bad("d-out","请填 U、φu、I、φi（有效值不小于 0）。"); return; }
+  var Um=U*Math.SQRT2, Im=I*Math.SQRT2, d=angNorm(phu-phi);
+  var steps=["已知：U 点 = "+f3(U)+"∠"+fAng(phu)+"° V，I 点 = "+f3(I)+"∠"+fAng(phi)+"° A。",
+    "第 1 步：电压幅值 Um = "+f3(U)+" * 1.414 = "+f3(Um)+" V，u(t) = "+f3(Um)+" * sin(ωt "+(phu<0?"-":"+")+" "+fAng(Math.abs(phu))+"°) V",
+    "第 2 步：电流幅值 Im = "+f3(I)+" * 1.414 = "+f3(Im)+" A，i(t) = "+f3(Im)+" * sin(ωt "+(phi<0?"-":"+")+" "+fAng(Math.abs(phi))+"°) A",
+    "第 3 步：相位差 = φu - φi = "+fAng(phu)+"° - ("+fAng(phi)+"°) = "+fAng(d)+"°，"+(d>0?"电压超前电流 "+fAng(d)+"°":(d<0?"电压滞后电流 "+fAng(-d)+"°（即电流超前）":"电压电流同相")),
+    "画图说明（V2 已修）：U 和 I 不再共用比例尺——电压相量图满幅对应 "+f3(U)+" V，电流相量图满幅对应 "+f3(I)+" A；波形上下两栏，每栏按自己的幅值归一化，"+f3(I)+" A 的电流不会再被 "+f3(U)+" V 的电压压扁。",
+    "回代验算：u(t) 的有效值 = Um / 1.414 = "+f3(Um)+" / 1.414 = "+f3(Um/Math.SQRT2)+" V = U ✓；波形上 u 与 i 过零点的先后与相位差 "+fAng(d)+"° 一致 ✓"];
+  var figs='<div class="figbox"><h3>电压相量图（独立比例尺）</h3>'+phasorOneSVG(U,phu,C_U,"U","V")+
+    '<p class="figcap">本图只有电压一个量：箭头满幅（102 px）= '+f3(U)+' V，角度 = 初相 φu = '+fAng(phu)+'°。</p></div>'+
+    '<div class="figbox"><h3>电流相量图（独立比例尺）</h3>'+phasorOneSVG(I,phi,C_I,"I","A")+
+    '<p class="figcap">本图只有电流一个量：箭头满幅（102 px）= '+f3(I)+' A，角度 = 初相 φi = '+fAng(phi)+'°。与电压图分开画，就是为了避免 5 A 在 220 V 的尺子下只剩 2.4 px。</p></div>'+
+    '<div class="figbox"><h3>正弦波形图（上下两栏，各自归一化）</h3>'+
+    waveDualSVG([{amp:Um,phaseDeg:phu,color:C_U,label:"u(t)",unit:"V"},{amp:Im,phaseDeg:phi,color:C_I,label:"i(t)",unit:"A"}])+
+    '<p class="figcap">上栏 u(t)：幅值 '+f3(Um)+' V；下栏 i(t)：幅值 '+f3(Im)+' A。两栏横轴同为 ωt（0 到 720°），纵轴各自按本栏幅值定标，所以高度相同不代表数值相同，看相位差要对齐横轴位置。</p></div>';
+  renderOut("d-out",[["u(t)",f3(Um)+" * sin(ωt "+(phu<0?"-":"+")+" "+fAng(Math.abs(phu))+"°) V"],["i(t)",f3(Im)+" * sin(ωt "+(phi<0?"-":"+")+" "+fAng(Math.abs(phi))+"°) A"],["相位差 φu-φi",fAng(d)+"°"]],steps,figs);
+}
+/* ---------- 3.3 覆盖：相量图与波形图分成独立图框 ---------- */
+function calcElem(){
+  var X=gv("el-X"), f=gv("el-f"), hasI=!blank("el-I"), hasU=!blank("el-U");
+  var I=gv("el-I"), U=gv("el-U"), phi=gvRaw("el-phi"); if(isNaN(phi)) phi=0;
+  if(isNaN(X)||X<=0){ bad("el-out","请先填元件参数（大于 0）。电感、电容还要填频率 f。"); return; }
+  var reactance, steps=[], rel="", phu;
+  if(elemType==="R"){
+    reactance=X; rel="电阻：电压与电流同相，φu = φi";
+    steps.push("已知：R = "+fmtR(X)+"，纯电阻元件。");
+    steps.push("第 1 步：电阻元件的电压电流关系与直流相同：U = I * R，相位相同。");
+  } else if(elemType==="L"){
+    if(isNaN(f)||f<=0){ bad("el-out","电感要填频率 f。"); return; }
+    reactance=2*Math.PI*f*X; rel="电感：电压超前电流 90°，φu = φi + 90°";
+    steps.push("已知：L = "+fmtL(X)+"，f = "+f3(f)+" Hz。");
+    steps.push("第 1 步：感抗 XL = 2 * π * f * L = 2 * 3.1416 * "+f3(f)+" * "+f3(X));
+    steps.push("        = "+f3(2*Math.PI*f)+" * "+f3(X)+" = "+f3(reactance)+" Ω（频率越高，感抗越大）");
+  } else {
+    if(isNaN(f)||f<=0){ bad("el-out","电容要填频率 f。"); return; }
+    reactance=1/(2*Math.PI*f*X); rel="电容：电流超前电压 90°，φu = φi - 90°";
+    steps.push("已知：C = "+fmtC(X)+"，f = "+f3(f)+" Hz。");
+    steps.push("第 1 步：容抗 XC = 1 / (2 * π * f * C) = 1 / (2 * 3.1416 * "+f3(f)+" * "+f3(X)+")");
+    steps.push("        = 1 / "+f3(2*Math.PI*f*X)+" = "+f3(reactance)+" Ω（频率越高，容抗越小）");
+  }
+  if(hasI&&!hasU){ U=I*reactance; steps.push("第 2 步：U = I * "+(elemType==="R"?"R":(elemType==="L"?"XL":"XC"))+" = "+f3(I)+" A * "+f3(reactance)+" Ω = "+f3(U)+" V"); }
+  else if(hasU&&!hasI){ I=U/reactance; steps.push("第 2 步：I = U / "+(elemType==="R"?"R":(elemType==="L"?"XL":"XC"))+" = "+f3(U)+" V / "+f3(reactance)+" Ω = "+fmtI(I)); }
+  else { bad("el-out","电流 I 和电压 U 只填一个，另一个会算出来。"); return; }
+  phu = elemType==="R"?phi:(elemType==="L"?angNorm(phi+90):angNorm(phi-90));
+  steps.push("第 3 步：相位关系 —— "+rel+"。已知 φi = "+fAng(phi)+"°，所以 φu = "+fAng(phu)+"°");
+  var Um=U*Math.SQRT2, Im=I*Math.SQRT2;
+  steps.push("第 4 步：瞬时值：u(t) = "+f3(Um)+" * sin(ωt "+(phu<0?"-":"+")+" "+fAng(Math.abs(phu))+"°) V，i(t) = "+f3(Im)+" * sin(ωt "+(phi<0?"-":"+")+" "+fAng(Math.abs(phi))+"°) A");
+  steps.push("回代验算：U / I = "+f3(U)+" / "+f3(I)+" = "+f3(U/I)+" Ω，应等于 "+(elemType==="R"?"R":(elemType==="L"?"XL":"XC"))+" = "+f3(reactance)+" Ω ✓");
+  var rows=[["电压有效值 U",f3(U)+" V"],["电流有效值 I",fmtI(I)],["相位关系",rel]];
+  if(elemType!=="R") rows.splice(1,0,[(elemType==="L"?"感抗 XL":"容抗 XC"),f3(reactance)+" Ω"]);
+  var figs='<div class="figbox"><h3>电压相量图（独立图框、独立比例）</h3>'+phasorOneSVG(U,phu,C_U,"U","V")+'<p class="figcap">满幅 = '+f3(U)+' V，角度 φu = '+fAng(phu)+'°。</p></div>'+
+    '<div class="figbox"><h3>电流相量图（独立图框、独立比例）</h3>'+phasorOneSVG(I,phi,C_I,"I","A")+'<p class="figcap">满幅 = '+f3(I)+' A，角度 φi = '+fAng(phi)+'°。两图角度之差就是 '+rel.split("，")[1]+'。</p></div>'+
+    '<div class="figbox"><h3>波形图（上下两栏，各自归一化）</h3>'+waveDualSVG([{amp:Um,phaseDeg:phu,color:C_U,label:"u(t)",unit:"V"},{amp:Im,phaseDeg:phi,color:C_I,label:"i(t)",unit:"A"}])+'<p class="figcap">上栏 u(t) 幅值 '+f3(Um)+' V，下栏 i(t) 幅值 '+f3(Im)+' A，各自定标。</p></div>';
+  renderOut("el-out",rows,steps,figs);
+}
+/* ---------- 并联图覆盖：图内只留短标签，数值进图注（修支路标签互相侵入） ---------- */
+function parallelSVG(U,Rs,Itot,Ibr){
+  var n=Rs.length, W=360, H=196, top=52, bot=158, xL=52, xR=322;
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="并联电路原理图">';
+  s+='<line x1="'+xL+'" y1="'+top+'" x2="'+xR+'" y2="'+top+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+xL+'" y1="'+bot+'" x2="'+xR+'" y2="'+bot+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+xL+'" y1="'+top+'" x2="'+xL+'" y2="'+bot+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+xR+'" y1="'+top+'" x2="'+xR+'" y2="96" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+(xR-15)+'" y1="96" x2="'+(xR+15)+'" y2="96" stroke="'+C_INK+'" stroke-width="3"/>';
+  s+='<line x1="'+(xR-7)+'" y1="104" x2="'+(xR+7)+'" y2="104" stroke="'+C_INK+'" stroke-width="3"/>';
+  s+='<line x1="'+xR+'" y1="104" x2="'+xR+'" y2="'+bot+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<text x="'+(xR-6)+'" y="86" font-size="13.5" font-weight="700" fill="'+C_INK+'" text-anchor="end">U = '+f3(U)+' V</text>';
+  var seg=(xR-xL)/(n+1);
+  for(var k=0;k<n;k++){
+    var bx=xL+seg*(k+1), midY=(top+bot)/2;
+    s+='<line x1="'+bx+'" y1="'+top+'" x2="'+bx+'" y2="'+(midY-20)+'" stroke="'+C_INK+'" stroke-width="2"/>';
+    s+='<rect x="'+(bx-11)+'" y="'+(midY-20)+'" width="22" height="40" fill="var(--card)" stroke="'+C_INK+'" stroke-width="2"/>';
+    s+='<line x1="'+bx+'" y1="'+(midY+20)+'" x2="'+bx+'" y2="'+bot+'" stroke="'+C_INK+'" stroke-width="2"/>';
+    s+=arrowHead(bx,top+16,90,C_I);
+    s+='<text x="'+bx+'" y="'+(top-24)+'" font-size="13.5" font-weight="700" fill="'+C_INK+'" text-anchor="middle">R'+(k+1)+'</text>';
+    s+='<text x="'+bx+'" y="'+(top-9)+'" font-size="12" font-weight="700" fill="'+C_I+'" text-anchor="middle">I'+(k+1)+' ↓</text>';
+  }
+  s+='<text x="187" y="'+(bot+24)+'" font-size="13.5" font-weight="700" fill="'+C_I+'" text-anchor="middle">总电流 I = '+fmtI(Itot)+'（= 各支路电流之和）</text>';
+  return s+'</svg>';
+}
+function calcParallel(){
+  var Itot=gv("p-I"), Rs=[gv("p-R1"),gv("p-R2")];
+  if(!blank("p-R3")) Rs.push(gv("p-R3"));
+  if(isNaN(Itot)||Rs.some(isNaN)||Rs.some(function(r){return r<=0;})){ bad("p-out","请填总电流 I 和至少 R1、R2（电阻要大于 0）。"); return; }
+  var inv=Rs.reduce(function(a,r){return a+1/r;},0), Req=1/inv, U=Itot*Req;
+  var Ibr=Rs.map(function(r){return U/r;});
+  var steps=["已知：总电流 I = "+fmtI(Itot)+"，"+Rs.map(function(r,i){return "R"+(i+1)+" = "+fmtR(r);}).join("，")+"，并联连接。"];
+  steps.push("第 1 步：并联等效 1 / R = "+Rs.map(function(r){return "1 / "+f3(r);}).join(" + ")+" = "+f3(inv)+" S");
+  steps.push("        取倒数：R = 1 / "+f3(inv)+" = "+f3(Req)+" Ω（等效电阻比最小的支路电阻还小）");
+  steps.push("第 2 步：各支路电压相等，U = I * R = "+f3(Itot)+" A * "+f3(Req)+" Ω = "+f3(U)+" V");
+  Rs.forEach(function(r,i){
+    var others=Rs.filter(function(_,j){return j!==i;});
+    if(Rs.length===2) steps.push("第 "+(3+i)+" 步：分流 I"+(i+1)+" = I * R"+(i===0?2:1)+" / (R1 + R2) = "+f3(Itot)+" * "+f3(others[0])+" / "+f3(Rs[0]+Rs[1])+" = "+fmtI(Ibr[i])+"（也等于 U / R"+(i+1)+" = "+f3(U)+" / "+f3(r)+")");
+    else steps.push("第 "+(3+i)+" 步：支路电流 I"+(i+1)+" = U / R"+(i+1)+" = "+f3(U)+" V / "+f3(r)+" Ω = "+fmtI(Ibr[i]));
+  });
+  steps.push("回代验算：I1 + I2"+(Rs.length>2?" + I3":"")+" = "+Ibr.map(function(x){return f3(x);}).join(" + ")+" = "+f3(Ibr.reduce(function(a,b){return a+b;},0))+" A，应等于总电流 I = "+f3(Itot)+" A ✓");
+  var rows=[["等效电阻 R",fmtR(Req)],["支路电压 U",f3(U)+" V"]];
+  Ibr.forEach(function(x,i){ rows.push(["支路电流 I"+(i+1),fmtI(x)]); });
+  rows.push(["总功率 P",f3(U*Itot)+" W"]);
+  var cap=Rs.map(function(r,i){ return "R"+(i+1)+" = "+fmtR(r)+"，I"+(i+1)+" = "+fmtI(Ibr[i]); }).join("；");
+  var figs='<div class="figbox"><h3>并联电路原理图（数值来自本次计算）</h3>'+parallelSVG(U,Rs,Itot,Ibr)+'<p class="figcap">各支路数值：'+cap+'。图内只标 R1、I1 等短标签，数值统一放在这行图注里，避免支路标签互相挤压。并联：各支路电压相等，电阻越小分到的电流越大。</p></div>';
+  renderOut("p-out",rows,steps,figs);
+}
+</script>
+<script>
+"use strict";
+/* ================= V2 图形修复（二）：RLC 相量图、功率三角形、BJT 图 ================= */
+function rlcPhasorSVG(U,I,UR,UL,UC,phiZ){
+  var W=360,H=300, ox=52, oy=152;
+  var maxV=Math.max(UR,UL,UC,U,1e-9), sc=116/maxV;
+  var xUR=ox+UR*sc, yUL=oy-UL*sc, yU=oy-(UL-UC)*sc;
+  function seg(x1,y1,x2,y2,color,w){ return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+color+'" stroke-width="'+(w||2.4)+'"/>'; }
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="RLC 串联相量图">';
+  s+='<line x1="14" y1="'+oy+'" x2="348" y2="'+oy+'" stroke="'+C_GRID+'"/>';
+  s+='<line x1="'+ox+'" y1="16" x2="'+ox+'" y2="284" stroke="'+C_GRID+'"/>';
+  /* 参考电流：固定示意长度，图注声明 */
+  s+=seg(ox,oy,ox+52,oy,C_I,2.6)+arrowHead(ox+56,oy,0,C_I);
+  s+='<text x="'+ox+'" y="'+(oy+34)+'" font-size="12.5" font-weight="700" fill="'+C_I+'">I = '+f3(I)+' A（参考相量，示意长度）</text>';
+  /* UR 沿水平 */
+  s+=seg(ox,oy,xUR,oy,C_U)+arrowHead(xUR,oy,0,C_U);
+  s+='<text x="'+cl2((ox+xUR)/2,44,316)+'" y="'+(oy+19)+'" font-size="13.5" font-weight="700" fill="'+C_U+'" text-anchor="middle">UR = '+f3(UR)+' V</text>';
+  /* UL 自 UR 末端向上，标签放左侧 */
+  s+=seg(xUR,oy,xUR,yUL,C_UL)+arrowHead(xUR,yUL,-90,C_UL);
+  s+='<text x="'+cl2(xUR-8,40,320)+'" y="'+cl2((oy+yUL)/2+4,16,284)+'" font-size="13.5" font-weight="700" fill="'+C_UL+'" text-anchor="end">UL = '+f3(UL)+' V</text>';
+  /* UC 自 UL 末端向下到 U 末端，标签放右侧，与 UL 标签分列两侧 */
+  s+=seg(xUR,yUL,xUR,yU,C_A)+arrowHead(xUR,yU,90,C_A);
+  s+='<text x="'+cl2(xUR+9,44,322)+'" y="'+cl2((yUL+yU)/2+4,16,284)+'" font-size="13.5" font-weight="700" fill="'+C_A+'" text-anchor="start">UC = '+f3(UC)+' V</text>';
+  /* 合成 U：原点到 (xUR, yU) */
+  s+=seg(ox,oy,xUR,yU,C_U,3)+arrowHead(xUR,yU,Math.atan2(-(yU-oy),xUR-ox)*180/Math.PI,C_U);
+  var uxLab=cl2(xUR+10,50,330), uAnch=(xUR>268)?"end":"start";
+  if(uAnch==="end") uxLab=cl2(xUR-10,50,330);
+  s+='<text x="'+uxLab+'" y="'+cl2(yU-8,16,284)+'" font-size="14.5" font-weight="700" fill="'+C_U+'" text-anchor="'+uAnch+'">U = '+f3(U)+' V，φ = '+fAng(phiZ)+'°</text>';
+  return s+'</svg>';
+}
+function powerTriangleSVG(P,Q,S,phiZ){
+  var W=360,H=244, ox=52, oy=120;
+  var maxS=Math.max(Math.abs(P),Math.abs(Q),S,1e-9), sc=98/maxS;
+  var xP=ox+P*sc, yQ=oy-Q*sc;
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="功率三角形">';
+  s+='<line x1="14" y1="'+oy+'" x2="348" y2="'+oy+'" stroke="'+C_GRID+'"/>';
+  s+='<line x1="'+ox+'" y1="12" x2="'+ox+'" y2="230" stroke="'+C_GRID+'"/>';
+  s+='<line x1="'+ox+'" y1="'+oy+'" x2="'+xP+'" y2="'+oy+'" stroke="'+C_U+'" stroke-width="3"/>';
+  s+='<line x1="'+xP+'" y1="'+oy+'" x2="'+xP+'" y2="'+yQ+'" stroke="'+C_UL+'" stroke-width="3"/>';
+  s+='<line x1="'+ox+'" y1="'+oy+'" x2="'+xP+'" y2="'+yQ+'" stroke="'+C_I+'" stroke-width="3"/>';
+  var pLabY=(Q>=0)?oy+22:yQ+22;
+  s+='<text x="'+cl2((ox+xP)/2,50,310)+'" y="'+cl2(pLabY,16,232)+'" font-size="14" font-weight="700" fill="'+C_U+'" text-anchor="middle">P = '+f3(P)+' W</text>';
+  var qAnch=(xP>272)?"end":"start", qx=(xP>272)?xP-8:xP+8;
+  s+='<text x="'+qx+'" y="'+cl2((oy+yQ)/2+4,16,232)+'" font-size="14" font-weight="700" fill="'+C_UL+'" text-anchor="'+qAnch+'">Q = '+f3(Q)+' var</text>';
+  var mx=(ox+xP)/2, my=(oy+yQ)/2, vx=mx-xP, vy=my-oy, vl=Math.sqrt(vx*vx+vy*vy)||1;
+  var sx=cl2(mx+vx/vl*20,44,316), sy=cl2(my+vy/vl*20-6,16,232);
+  s+='<text x="'+sx+'" y="'+sy+'" font-size="14" font-weight="700" fill="'+C_I+'" text-anchor="middle">S = '+f3(S)+' VA</text>';
+  s+='<text x="'+(ox+36)+'" y="'+(oy-8)+'" font-size="13" fill="'+C_INK+'">φ = '+fAng(phiZ)+'°</text>';
+  return s+'</svg>';
+}
+function bjtCircuitSVG(UCC,RB,RC,IB,IC,UCE){
+  var W=360,H=270,s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="固定偏置放大电路">';
+  var rail=34, gnd=238, bx=150, cx=238;
+  s+='<line x1="40" y1="'+rail+'" x2="310" y2="'+rail+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<text x="308" y="'+(rail-8)+'" font-size="14" font-weight="700" fill="'+C_INK+'" text-anchor="end">+UCC = '+f3(UCC)+' V</text>';
+  s+='<rect x="'+(bx-10)+'" y="86" width="20" height="46" fill="var(--card)" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+bx+'" y1="'+rail+'" x2="'+bx+'" y2="86" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+bx+'" y1="132" x2="'+bx+'" y2="168" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<text x="'+(bx-16)+'" y="112" font-size="13.5" font-weight="700" fill="'+C_INK+'" text-anchor="end">RB = '+fmtR(RB)+'</text>';
+  s+=arrowHead(bx,80,90,C_I)+'<text x="'+(bx+10)+'" y="72" font-size="12.5" font-weight="700" fill="'+C_I+'">IB = '+fmtI(IB)+'</text>';
+  s+='<rect x="'+(cx-10)+'" y="86" width="20" height="46" fill="var(--card)" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+cx+'" y1="'+rail+'" x2="'+cx+'" y2="86" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="'+cx+'" y1="132" x2="'+cx+'" y2="160" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<text x="'+(cx+16)+'" y="112" font-size="13.5" font-weight="700" fill="'+C_INK+'">RC = '+fmtR(RC)+'</text>';
+  s+=arrowHead(cx,80,90,C_I)+'<text x="'+(cx+10)+'" y="72" font-size="12.5" font-weight="700" fill="'+C_I+'">IC = '+fmtI(IC)+'</text>';
+  s+='<line x1="'+bx+'" y1="168" x2="196" y2="168" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="196" y1="146" x2="196" y2="190" stroke="'+C_INK+'" stroke-width="3.4"/>';
+  s+='<line x1="196" y1="156" x2="'+cx+'" y2="160" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="196" y1="180" x2="222" y2="'+gnd+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<polygon points="213,208 224,224 205,222" fill="'+C_INK+'"/>';
+  s+='<line x1="40" y1="'+gnd+'" x2="310" y2="'+gnd+'" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<text x="175" y="'+(gnd+20)+'" font-size="13" fill="'+C_INK+'" text-anchor="middle">地（0 V）</text>';
+  s+='<text x="120" y="162" font-size="12.5" fill="'+C_U+'">b</text><text x="252" y="152" font-size="12.5" fill="'+C_U+'">c</text><text x="230" y="206" font-size="12.5" fill="'+C_U+'">e</text>';
+  s+='<text x="262" y="196" font-size="13.5" font-weight="700" fill="'+C_U+'">UCE = '+f3(UCE)+' V</text>';
+  s+='<text x="262" y="214" font-size="12" fill="'+C_INK+'">（c 到 e 的电压）</text>';
+  return s+'</svg>';
+}
+function bjtLoadLineSVG(UCC,RC,ICsat,IC,UCE,IB){
+  var W=360,H=288, ox=48, oy=230, x1=330, y1=26;
+  var maxIC=ICsat*1.18, maxU=UCC*1.08;
+  function X(u){ return ox+(x1-ox)*u/maxU; } function Y(c){ return oy-(oy-y1)*c/maxIC; }
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="负载线与输出特性">';
+  for(var g=0; g<=4; g++){ var gy=oy-(oy-y1)*g/4; s+='<line x1="'+ox+'" y1="'+gy+'" x2="'+x1+'" y2="'+gy+'" stroke="'+C_GRID+'" stroke-width="0.7"/>'; }
+  s+='<line x1="'+ox+'" y1="'+oy+'" x2="'+x1+'" y2="'+oy+'" stroke="'+C_INK+'" stroke-width="1.6"/>';
+  s+='<line x1="'+ox+'" y1="'+oy+'" x2="'+ox+'" y2="'+(y1-8)+'" stroke="'+C_INK+'" stroke-width="1.6"/>';
+  s+='<text x="'+(x1-2)+'" y="'+(oy+38)+'" font-size="13" fill="'+C_INK+'" text-anchor="end">UCE / V</text>';
+  s+='<text x="'+(ox-6)+'" y="'+(y1-2)+'" font-size="13" fill="'+C_INK+'" text-anchor="end">IC / mA</text>';
+  s+='<text x="'+ox+'" y="'+(oy+20)+'" font-size="12" fill="'+C_INK+'" text-anchor="middle">0</text>';
+  var ibs=[25,50,75,100], betaGuess=IC>0&&IB>0?(IC/IB):40;
+  ibs.forEach(function(ib){
+    var icLev=Math.min(ib*1e-6*betaGuess*1000, maxIC*1.04);
+    var knee=1.1, pts=[];
+    for(var u=0;u<=maxU;u+=maxU/40){ var c=icLev*(u<knee?(0.25+0.75*u/knee):(1+0.012*(u-knee))); pts.push((u===0?"M":"L")+X(u).toFixed(1)+","+Y(Math.min(c,maxIC)).toFixed(1)); }
+    var isQ=Math.abs(ib*1e-6-IB)<IB*0.3;
+    s+='<path d="'+pts.join(" ")+'" fill="none" stroke="'+(isQ?C_I:C_GRID)+'" stroke-width="'+(isQ?2.4:1.4)+'"/>';
+    s+='<text x="'+(x1-2)+'" y="'+cl2(Y(Math.min(icLev,maxIC))-5,14,oy-8)+'" font-size="11.5" fill="'+(isQ?C_I:C_INK)+'" text-anchor="end">IB = '+ib+' uA</text>';
+  });
+  s+='<line x1="'+X(0)+'" y1="'+Y(ICsat)+'" x2="'+X(UCC)+'" y2="'+Y(0)+'" stroke="'+C_U+'" stroke-width="2.6"/>';
+  s+='<circle cx="'+X(UCC)+'" cy="'+Y(0)+'" r="4" fill="'+C_U+'"/><circle cx="'+X(0)+'" cy="'+Y(ICsat)+'" r="4" fill="'+C_U+'"/>';
+  s+='<text x="'+cl2(X(UCC),60,348)+'" y="'+(Y(0)-8)+'" font-size="12.5" font-weight="700" fill="'+C_U+'" text-anchor="end">('+f3(UCC)+' V, 0)</text>';
+  s+='<text x="'+(X(0)+6)+'" y="'+Math.max(Y(ICsat)-6,16)+'" font-size="12.5" font-weight="700" fill="'+C_U+'">(0, '+f3(ICsat*1000)+' mA)</text>';
+  if(IC<=ICsat&&UCE>=0){
+    s+='<line x1="'+X(UCE)+'" y1="'+Y(IC)+'" x2="'+X(UCE)+'" y2="'+oy+'" stroke="'+C_I+'" stroke-dasharray="4 3"/>';
+    s+='<line x1="'+X(UCE)+'" y1="'+Y(IC)+'" x2="'+ox+'" y2="'+Y(IC)+'" stroke="'+C_I+'" stroke-dasharray="4 3"/>';
+    s+='<circle cx="'+X(UCE)+'" cy="'+Y(IC)+'" r="5" fill="'+C_I+'"/>';
+    s+='<text x="'+cl2(X(UCE)+8,20,330)+'" y="'+cl2(Y(IC)-8,16,oy-6)+'" font-size="14" font-weight="700" fill="'+C_I+'">Q</text>';
+    s+='<text x="'+cl2(X(UCE),30,320)+'" y="'+(oy+20)+'" font-size="12.5" font-weight="700" fill="'+C_I+'" text-anchor="middle">'+f3(UCE)+' V</text>';
+    s+='<text x="'+(ox-6)+'" y="'+(Y(IC)+4)+'" font-size="12.5" font-weight="700" fill="'+C_I+'" text-anchor="end">'+f3(IC*1000)+'</text>';
+  }
+  return s+'</svg>';
+}
+/* ---------- 3.15 覆盖：补齐 i、uR、uL、uC 的瞬时值表达式 ---------- */
+function calcRLC(){
+  var U=gv("z-U"), f=gv("z-f"), R=gv("z-R"), L=gv("z-L"), C=gv("z-C"), cos2=gvRaw("z-cos2");
+  if([U,f,R,L,C].some(isNaN)||U<=0||f<=0||R<=0||L<=0||C<=0){ bad("z-out","请填 U、f、R、L、C（都要大于 0）。"); return; }
+  var XL=2*Math.PI*f*L, XC=1/(2*Math.PI*f*C), X=XL-XC;
+  var Zmag=Math.sqrt(R*R+X*X), phiZ=Math.atan2(X,R)*180/Math.PI;
+  var I=U/Zmag, UR=I*R, UL=I*XL, UC=I*XC;
+  var P=I*I*R, Q=I*I*X, S=U*I, cos1=R/Zmag;
+  var nature = X>0.001?"感性（XL > XC，电流滞后电压）":(X<-0.001?"容性（XC > XL，电流超前电压）":"阻性（XL = XC，串联谐振状态）");
+  function inst(amp,ph,sym){ var p=angNorm(ph); return sym+"(t) = "+f3(amp)+" * sin(ωt "+(p<0?"-":"+")+" "+fAng(Math.abs(p))+"°)"; }
+  var phiI=-phiZ, Im=I*Math.SQRT2;
+  var iT=inst(Im,phiI,"i")+" A", uRT=inst(UR*Math.SQRT2,phiI,"uR")+" V", uLT=inst(UL*Math.SQRT2,phiI+90,"uL")+" V", uCT=inst(UC*Math.SQRT2,phiI-90,"uC")+" V";
+  var steps=["已知：U = "+f3(U)+" V，f = "+f3(f)+" Hz，R = "+fmtR(R)+"，L = "+fmtL(L)+"，C = "+fmtC(C)+"，RLC 串联。设 U 点 = "+f3(U)+"∠0° V。",
+    "第 1 步：感抗 XL = 2 * π * f * L = 2 * 3.1416 * "+f3(f)+" * "+f3(L)+" = "+f3(XL)+" Ω",
+    "第 2 步：容抗 XC = 1 / (2 * π * f * C) = 1 / (2 * 3.1416 * "+f3(f)+" * "+f3(C)+") = 1 / "+f3(2*Math.PI*f*C)+" = "+f3(XC)+" Ω",
+    "第 3 步：电抗 X = XL - XC = "+f3(XL)+" - "+f3(XC)+" = "+f3(X)+" Ω；阻抗 Z = R + j(XL - XC) = "+f3(R)+" "+(X<0?"-":"+")+" j"+f3(Math.abs(X))+" Ω",
+    "第 4 步：阻抗模 |Z| = 根号(R * R + X * X) = 根号("+f3(R*R)+" + "+f3(X*X)+") = 根号("+f3(R*R+X*X)+") = "+f3(Zmag)+" Ω",
+    "第 5 步：阻抗角 φ = arctan(X / R) = arctan("+f3(X)+" / "+f3(R)+") = "+fAng(phiZ)+"°，电路呈"+nature,
+    "第 6 步：电流 I = U / |Z| = "+f3(U)+" / "+f3(Zmag)+" = "+f3(I)+" A；电流初相 = 0° - φ = "+fAng(phiI)+"°，即 I 点 = "+f3(I)+"∠"+fAng(phiI)+"° A",
+    "第 7 步：各元件电压：UR = I * R = "+f3(I)+" * "+f3(R)+" = "+f3(UR)+" V；UL = I * XL = "+f3(I)+" * "+f3(XL)+" = "+f3(UL)+" V；UC = I * XC = "+f3(I)+" * "+f3(XC)+" = "+f3(UC)+" V",
+    "        注意 UL、UC 都可能大于总电压 U，这是相量相加（UL 与 UC 反相、先抵消）的结果，不是算错。",
+    "第 8 步：瞬时值表达式（幅值 = 有效值 * 1.414，相位：uR 与 i 同相，uL 超前 i 90°，uC 滞后 i 90°）：",
+    "        "+iT+"；"+uRT+"；"+uLT+"；"+uCT,
+    "第 9 步：有功功率 P = I * I * R = "+f3(I)+" * "+f3(I)+" * "+f3(R)+" = "+f3(P)+" W",
+    "第 10 步：无功功率 Q = I * I * (XL - XC) = "+f3(I*I)+" * "+f3(X)+" = "+f3(Q)+" var（正 = 感性无功，负 = 容性无功）",
+    "第 11 步：视在功率 S = U * I = "+f3(U)+" * "+f3(I)+" = "+f3(S)+" VA；功率因数 cosφ = R / |Z| = "+f3(R)+" / "+f3(Zmag)+" = "+f3(cos1),
+    "回代验算 1：根号(UR² + (UL - UC)²) = 根号("+f3(UR*UR)+" + "+f3((UL-UC)*(UL-UC))+") = "+f3(Math.sqrt(UR*UR+(UL-UC)*(UL-UC)))+" V，应等于 U = "+f3(U)+" V ✓",
+    "回代验算 2：根号(P² + Q²) = 根号("+f3(P*P)+" + "+f3(Q*Q)+") = "+f3(Math.sqrt(P*P+Q*Q))+" VA，应等于 S = "+f3(S)+" VA ✓"];
+  if(Math.abs(R-30)<0.6&&Math.abs(U-220)<2&&Math.abs(f-50)<0.6){
+    steps.push("附录对照（3.15）：课本与交流群解法用 ω = 314 近似，得到 XL = 40 Ω、XC = 80 Ω、I = 4.4 A、UR = 132 V、UL = 176 V、UC = 352 V；本程序用精确的 2πf 计算（XL = "+f3(XL)+" Ω、XC = "+f3(XC)+" Ω、I = "+f3(I)+" A），小数不同、方法相同，不是算错。");
+  }
+  var rows=[["感抗 XL",f3(XL)+" Ω"],["容抗 XC",f3(XC)+" Ω"],["阻抗 Z",f3(R)+" "+(X<0?"-":"+")+" j"+f3(Math.abs(X))+" Ω"],["|Z| / φ",f3(Zmag)+" Ω / "+fAng(phiZ)+"°"],["电流 I",f3(I)+" A ∠"+fAng(phiI)+"°"],["UR / UL / UC",f3(UR)+" V / "+f3(UL)+" V / "+f3(UC)+" V"],["i(t)",iT+" A"],["uR(t)",uRT+" V"],["uL(t)",uLT+" V"],["uC(t)",uCT+" V"],["P / Q / S",f3(P)+" W / "+f3(Q)+" var / "+f3(S)+" VA"],["功率因数 cosφ",f3(cos1)+"（"+nature.split("（")[0]+"）"]];
+  var note="";
+  if(!isNaN(cos2)&&cos2>cos1&&cos2<1&&cos2>0){
+    var phi1=Math.acos(cos1), phi2=Math.acos(cos2);
+    var Cc=P*(Math.tan(phi1)-Math.tan(phi2))/(2*Math.PI*f*U*U);
+    steps.push("功率因数提高（并联电容）：目标 cosφ2 = "+f3(cos2)+"，φ1 = "+fAng(phi1*180/Math.PI)+"°，φ2 = "+fAng(phi2*180/Math.PI)+"°");
+    steps.push("        C = P * (tanφ1 - tanφ2) / (2 * π * f * U * U) = "+f3(P)+" * ("+f3(Math.tan(phi1))+" - "+f3(Math.tan(phi2))+") / (2 * 3.1416 * "+f3(f)+" * "+f3(U*U)+")");
+    steps.push("        = "+f3(P*(Math.tan(phi1)-Math.tan(phi2)))+" / "+f3(2*Math.PI*f*U*U)+" = "+fmtC(C)+"，并联在负载两端");
+    steps.push("        原理：电容发出容性无功，抵消一部分感性无功，P 不变、Q 减小、S 减小、线路电流减小。");
+    rows.push(["提高到 cosφ="+f3(cos2)+" 需并联电容",fmtC(C)]);
+  } else if(!isNaN(cos2)){ note='<div class="warn">目标功率因数要填在当前 cosφ（'+f3(cos1)+'）与 1 之间才计算并联电容。</div>'; }
+  var figs='<div class="figbox"><h3>电压相量图（以电流 I 为参考）</h3>'+rlcPhasorSVG(U,I,UR,UL,UC,phiZ)+
+    '<p class="figcap">比例尺：满幅 116 px = '+f3(Math.max(UR,UL,UC,U))+' V（按本图中最大电压定标）。UR 与 I 同相画在横轴，UL 自 UR 末端向上（标签在左侧），UC 自 UL 末端向下（标签在右侧），两侧分列不会重叠；蓝粗线 U 是 UR 与 (UL - UC) 的相量和。电流 I 只作参考方向，长度为示意。</p></div>'+
+    '<div class="figbox"><h3>功率三角形</h3>'+powerTriangleSVG(P,Q,S,phiZ)+
+    '<p class="figcap">S² = P² + Q²；cosφ = P / S。Q 为'+(Q>=0?"正（感性），三角形在横轴上方":"负（容性），三角形在横轴下方")+'；S 标签沿斜边外侧放置，不压线。</p></div>';
+  renderOut("z-out",rows,steps,figs,note);
+}
+$("z-rand").addEventListener("click",function(){
+  function sc(id,lo,hi){ var el=$(id); if(!el||el.value==="")return; var v=parseFloat(el.value)*(lo+Math.random()*(hi-lo)); el.value=String(Number(v.toPrecision(3))); }
+  sc("z-U",0.85,1.2); sc("z-R",0.7,1.3); sc("z-L",0.7,1.3); sc("z-C",0.7,1.3);
+  calcRLC();
+});
+</script>
+<script>
+"use strict";
+/* ================= V2 陪练器通用组件 ================= */
+var TRAIN={calc:{},preset:{},rand:{}};
+function fs(x){ if(!isFinite(x)) return "—"; return String(Math.round(x*10000)/10000); }
+function setV(id,v){ var el=$(id); if(el) el.value=(v===""||v===null||v===undefined)?"":String(v); }
+function setSel(id,v){ var el=$(id); if(el) el.value=String(v); }
+function magNote(ok,msg){ return ok?'<div class="oknote">数量级检查：'+esc(msg)+' ✓</div>':'<div class="warn">数量级提醒：'+esc(msg)+'</div>'; }
+function signDiv(msg){ return '<div class="signnote">符号说明：'+esc(msg)+'</div>'; }
+function rScale(v,lo,hi){ return v*(lo+Math.random()*(hi-lo)); }
+function nice3(v){ return String(Number(v.toPrecision(3))); }
+/* 复数小工具 */
+function CX(r,i){ return {r:r,i:i}; }
+function cadd(a,b){ return CX(a.r+b.r,a.i+b.i); }
+function csub(a,b){ return CX(a.r-b.r,a.i-b.i); }
+function cmul(a,b){ return CX(a.r*b.r-a.i*b.i, a.r*b.i+a.i*b.r); }
+function cdiv(a,b){ var d=b.r*b.r+b.i*b.i; return CX((a.r*b.r+a.i*b.i)/d,(a.i*b.r-a.r*b.i)/d); }
+function cpol(z){ return [Math.sqrt(z.r*z.r+z.i*z.i), angNorm(Math.atan2(z.i,z.r)*180/Math.PI)]; }
+function fcx(z){ return fs(z.r)+" "+(z.i<0?"-":"+")+" j"+fs(Math.abs(z.i)); }
+function fpolOf(z,unit){ var p=cpol(z); return f3(p[0])+"∠"+fAng(p[1])+"° "+unit; }
+function polSteps(z,name){
+  var p=cpol(z), r=z.r, i=z.i, ref=Math.abs(Math.atan(i/r)*180/Math.PI);
+  var quad, angTxt;
+  if(Math.abs(r)<1e-12&&Math.abs(i)<1e-12){ quad="零相量"; angTxt="模为 0，角度无意义"; }
+  else if(Math.abs(r)<1e-12){ quad=(i>0)?"在正虚轴上":"在负虚轴上"; angTxt="角 = "+fAng(p[1])+"°"; }
+  else if(Math.abs(i)<1e-12){ quad=(r>0)?"在正实轴上":"在负实轴上"; angTxt="角 = "+fAng(p[1])+"°"; }
+  else if(r>0&&i>0){ quad="第一象限"; angTxt="角 = arctan("+fs(Math.abs(i))+" / "+fs(Math.abs(r))+") = "+fAng(ref)+"°"; }
+  else if(r<0&&i>0){ quad="第二象限"; angTxt="角 = 180° - arctan("+fs(Math.abs(i))+" / "+fs(Math.abs(r))+") = 180° - "+fAng(ref)+"° = "+fAng(p[1])+"°"; }
+  else if(r<0&&i<0){ quad="第三象限"; angTxt="角 = -(180° - arctan("+fs(Math.abs(i))+" / "+fs(Math.abs(r))+")) = -（180° - "+fAng(ref)+"°) = "+fAng(p[1])+"°"; }
+  else { quad="第四象限"; angTxt="角 = -arctan("+fs(Math.abs(i))+" / "+fs(Math.abs(r))+") = "+fAng(p[1])+"°"; }
+  return name+"：模 = 根号("+fs(r)+"² + ("+fs(i)+")²) = 根号("+fs(r*r+i*i)+") = "+f3(p[0])+"；实部 "+fs(r)+"、虚部 "+fs(i)+" → "+quad+"，"+angTxt;
+}
+/* 方法门 */
+document.querySelectorAll(".gate").forEach(function(gate){
+  var card=gate.closest(".card");
+  var work=card?card.querySelector("fieldset.work"):null;
+  var fb=gate.querySelector(".gatefb");
+  gate.querySelectorAll("input[type=radio]").forEach(function(rd){
+    rd.addEventListener("change",function(){
+      if(!rd.checked) return;
+      fb.textContent=rd.getAttribute("data-why")||"";
+      fb.className="gatefb on "+(rd.getAttribute("data-ok")?"ok":"bad");
+      if(rd.getAttribute("data-ok")){
+        gate.classList.add("passed");
+        if(work) work.disabled=false;
+      } else {
+        var box=card.querySelector(".errchips");
+        if(box) bumpErr(box.getAttribute("data-errbox"),"方法选错");
+        fb.textContent=(rd.getAttribute("data-why")||"")+"（已记入错因：方法选错。再想想这道题的特征，重新选。）";
+      }
+    });
+  });
+});
+/* 错因记录（仅本次使用，不保存） */
+var ERRLOG={};
+function bumpErr(box,kind){
+  if(!box) return;
+  ERRLOG[box]=ERRLOG[box]||{}; ERRLOG[box][kind]=(ERRLOG[box][kind]||0)+1;
+  var wrap=document.querySelector('[data-errbox="'+box+'"]'); if(!wrap) return;
+  var log=wrap.querySelector(".errlog");
+  var parts=[]; for(var k in ERRLOG[box]) parts.push(k+" ×"+ERRLOG[box][k]);
+  if(log) log.textContent="已记录："+parts.join(" · ");
+  wrap.querySelectorAll("[data-err]").forEach(function(b){ if(ERRLOG[box][b.getAttribute("data-err")]) b.classList.add("on"); });
+}
+document.addEventListener("click",function(e){
+  var chip=e.target.closest("[data-err]");
+  if(chip){ var w=chip.closest(".errchips"); if(w) bumpErr(w.getAttribute("data-errbox"),chip.getAttribute("data-err")); return; }
+  var p=e.target.closest("[data-preset]");
+  if(p){ var k=p.getAttribute("data-preset"); if(TRAIN.preset[k]) TRAIN.preset[k](); return; }
+  var r=e.target.closest("[data-rand]");
+  if(r){ var k2=r.getAttribute("data-rand"); if(TRAIN.rand[k2]) TRAIN.rand[k2](); return; }
+  var c=e.target.closest("[data-tcalc]");
+  if(c){ var k3=c.getAttribute("data-tcalc"); if(k3==="t356") t356Appx=""; if(TRAIN.calc[k3]) TRAIN.calc[k3](); }
+});
+/* ================= 习题 1.1 元件功率 ================= */
+TRAIN.preset.t11=function(){
+  var U=[140,-90,60,-80,30], I=[-4,6,10,-4,6], C=[1,1,1,1,1];
+  for(var k=1;k<=5;k++){ setV("t11-U"+k,U[k-1]); setV("t11-I"+k,I[k-1]); setSel("t11-C"+k,C[k-1]); }
+  TRAIN.calc.t11();
+};
+TRAIN.calc.t11=function(){
+  var steps=["逐个元件判断：先看参考方向是否关联（电流参考方向从电压正极流入 = 关联），再套功率公式。吸收功率为正 = 吸收（负载）；为负 = 实际发出（电源）。"];
+  var rows=[], sum=0, maxP=0, negList=[];
+  for(var k=1;k<=5;k++){
+    var U=gvRaw("t11-U"+k), I=gvRaw("t11-I"+k), conv=parseFloat($("t11-C"+k).value);
+    if(isNaN(U)||isNaN(I)){ bad("t11-out","5 个元件的 U、I 都要填（电压可以为负）。"); return; }
+    var P=conv*U*I; sum+=P; maxP=Math.max(maxP,Math.abs(P));
+    var assoc=conv>0;
+    steps.push("元件 "+k+"：U = "+fs(U)+" V，I = "+fs(I)+" A，"+(assoc?"关联参考方向，P = U * I = "+fs(U)+" * "+fs(I):"非关联参考方向，吸收功率 P = -(U * I) = -("+fs(U)+" * "+fs(I)+")")+" = "+fs(P)+" W → "+(P>0?"吸收功率（负载）":(P<0?"吸收功率为负：实际发出 "+fs(-P)+" W，这个元件实际是电源":"不吸收也不发出")));
+    if(P<0) negList.push("元件 "+k);
+    rows.push(["元件 "+k+" 吸收功率",fs(P)+" W"+(P<0?"（实际发出）":"")]);
+  }
+  rows.push(["吸收功率合计",fs(sum)+" W"]);
+  var bal=Math.abs(sum)<0.005;
+  steps.push("功率平衡检查：5 个元件吸收功率之和 = "+fs(sum)+" W。"+(bal?"等于 0 ✓ —— 发出的与吸收的正好抵消，整表自洽。":"不等于 0 ✗ —— 真实电路必然满足功率平衡（总吸收 = 0），这说明至少一个元件的数值或参考方向与原图不一致：先逐项核对录入，再相信单个结果。"));
+  var note=magNote(maxP<=10000,"各元件功率最大 "+fs(maxP)+" W，在课本习题的常见量级内（若算出 kW 级，先查单位是不是把 mA 当成了 A）");
+  if(negList.length) note+=signDiv(negList.join("、")+" 的吸收功率为负：负号不是算错，表示实际功率方向与参考方向相反——它在发出功率，是电源。");
+  else note+=signDiv("本次 5 个元件吸收功率都不为负。若原图中有电源元件却一个负值都没有，多半是把某个元件的参考方向（关联/非关联）选反了，对照功率平衡检查一起看。");
+  renderOut("t11-out",rows,steps,null,note);
+};
+TRAIN.rand.t11=function(){
+  for(var k=1;k<=5;k++){
+    var U=gvRaw("t11-U"+k), I=gvRaw("t11-I"+k);
+    if(isNaN(U)||U===0) U=6; if(isNaN(I)||I===0) I=1;
+    setV("t11-U"+k,nice3(rScale(Math.abs(U),0.7,1.3))*(U<0?-1:1)*(Math.random()<0.3?-1:1));
+    setV("t11-I"+k,nice3(rScale(Math.abs(I),0.7,1.3)));
+    setSel("t11-C"+k,Math.random()<0.5?1:-1);
+  }
+  TRAIN.calc.t11();
+};
+/* ================= 习题 1.3 指示灯串联电阻 ================= */
+TRAIN.preset.t13=function(){ setV("t13-Un",110); setSel("t13-Un-u",1); setV("t13-Pn",8); setSel("t13-Pn-u",1); setV("t13-Us",380); setSel("t13-Us-u",1); TRAIN.calc.t13(); };
+TRAIN.calc.t13=function(){
+  var Un=gv("t13-Un"), Pn=gv("t13-Pn"), Us=gv("t13-Us");
+  if([Un,Pn,Us].some(isNaN)||Un<=0||Pn<=0||Us<=0){ bad("t13-out","请填额定电压、额定功率和电源电压（都大于 0）。"); return; }
+  if(Us<=Un){ bad("t13-out","电源电压（"+fs(Us)+" V）不高于灯泡额定电压（"+fs(Un)+" V），不需要串联降压电阻；硬套公式会算出负电阻，没有物理意义。"); return; }
+  var Rl=Un*Un/Pn, I=Pn/Un, dU=Us-Un, Rs=dU/I, Ps=I*I*Rs;
+  var series=[5,10,15,20,25,30,50,75,100,150,200], pick=null;
+  for(var j=0;j<series.length;j++){ if(series[j]>=Ps){ pick=series[j]; break; } }
+  var steps=["已知：灯泡额定值 Un = "+fs(Un)+" V、Pn = "+fs(Pn)+" W，电源 Us = "+fs(Us)+" V。灯泡必须工作在额定状态，多出的电压由串联电阻分掉。",
+    "第 1 步：灯丝电阻由额定状态求：R = Un * Un / Pn = "+fs(Un)+" * "+fs(Un)+" / "+fs(Pn)+" = "+fs(Un*Un)+" / "+fs(Pn)+" = "+fs(Rl)+" Ω",
+    "第 2 步：额定电流 I = Pn / Un = "+fs(Pn)+" / "+fs(Un)+" = "+fs(I)+" A（串联电路处处电流相同，这也是串联电阻的电流）",
+    "第 3 步：串联电阻要分掉的电压 = Us - Un = "+fs(Us)+" - "+fs(Un)+" = "+fs(dU)+" V",
+    "第 4 步：串联电阻 Rs = (Us - Un) / I = "+fs(dU)+" / "+fs(I)+" = "+fs(Rs)+" Ω ≈ "+f3(Rs/1000)+" kΩ",
+    "第 5 步：串联电阻实际功率 Ps = I * I * Rs = "+fs(I)+" * "+fs(I)+" * "+fs(Rs)+" = "+fs(Ps)+" W → 选型向上取标准规格："+(pick?pick+" W":"大于 200 W，需按实际功率另选大功率电阻"),
+    "回代验算：I * (R灯 + Rs) = "+fs(I)+" * ("+fs(Rl)+" + "+fs(Rs)+") = "+fs(I)+" * "+fs(Rl+Rs)+" = "+fs(I*(Rl+Rs))+" V，应等于 Us = "+fs(Us)+" V ✓；灯泡两端电压 I * R灯 = "+fs(I*Rl)+" V，应等于 Un = "+fs(Un)+" V ✓"];
+  var note=magNote(Rs>=0.5&&Rs<=200000,"串联电阻 "+f3(Rs)+" Ω、工作电流 "+fs(I)+" A，与小功率指示灯降压电路的量级相符（附录答案量级：约 3.7 kΩ、20 W）");
+  note+=signDiv("本结果无负号问题：Us > Un，Rs 为正，表示确实需要串入电阻降压；若题目把电源电压改到低于额定电压，公式会给出负电阻，那是方法不适用，不是答案。");
+  renderOut("t13-out",[["灯丝电阻 R",fmtR(Rl)],["额定电流 I",fmtI(I)],["串联电阻 Rs",fmtR(Rs)],["电阻实际功率 Ps",fs(Ps)+" W"],["电阻选型",pick?("选 "+pick+" W"):("需 > "+fs(Ps)+" W")]],steps,null,note);
+};
+TRAIN.rand.t13=function(){
+  var Un=Math.round(rScale(gv("t13-Un")||110,0.8,1.25));
+  var Pn=Number(rScale(gv("t13-Pn")||8,0.7,1.3).toPrecision(2));
+  var Us=Math.round(Un*(2.2+Math.random()*1.3));
+  setV("t13-Un",Un); setV("t13-Pn",Pn); setV("t13-Us",Us); TRAIN.calc.t13();
+};
+/* ================= 习题 1.6 KCL 两节点 ================= */
+function nodeSolve(knowns,refDir){
+  var sIn=0,sOut=0;
+  knowns.forEach(function(k){ if(k.dir==="in") sIn+=k.v; else sOut+=k.v; });
+  var net=sIn-sOut;
+  return {val:(refDir==="out"?net:-net), sIn:sIn, sOut:sOut, net:net};
+}
+TRAIN.preset.t16=function(){
+  setV("t16-a1",10); setSel("t16-a1d","in"); setV("t16-a2",6); setSel("t16-a2d","in"); setV("t16-a3",3); setSel("t16-a3d","out"); setSel("t16-i4d","out");
+  setV("t16-b1",3); setSel("t16-b1d","in"); setV("t16-b2",17); setSel("t16-b2d","out"); setSel("t16-i5d","out");
+  TRAIN.calc.t16();
+};
+TRAIN.calc.t16=function(){
+  function rd(id){ return gvRaw(id); }
+  var a=[{v:rd("t16-a1"),dir:$("t16-a1d").value},{v:rd("t16-a2"),dir:$("t16-a2d").value},{v:rd("t16-a3"),dir:$("t16-a3d").value}];
+  var b=[{v:rd("t16-b1"),dir:$("t16-b1d").value},{v:rd("t16-b2"),dir:$("t16-b2d").value}];
+  if(a.concat(b).some(function(k){return isNaN(k.v);})){ bad("t16-out","节点 A 的 3 条、节点 B 的 2 条已知电流都要填。"); return; }
+  var refA=$("t16-i4d").value, refB=$("t16-i5d").value;
+  var sA=nodeSolve(a,refA), I4=sA.val;
+  var flowAB=(refA==="out"?I4:-I4);
+  var sB=nodeSolve(b.concat([{v:flowAB,dir:"in"}]),refB), I5=sB.val;
+  var steps=["节点 A：已知流入合计 = "+fs(sA.sIn)+" A，已知流出合计 = "+fs(sA.sOut)+" A。",
+    "第 1 步：对 A 列 KCL：流入 = 流出。I4 的参考方向为"+(refA==="out"?"流出 A":"流入 A")+"，故 I4 = "+(refA==="out"?"流入合计 - 流出合计 = "+fs(sA.sIn)+" - "+fs(sA.sOut):"流出合计 - 流入合计 = "+fs(sA.sOut)+" - "+fs(sA.sIn))+" = "+fs(I4)+" A。",
+    "        I4 的实际流向："+(flowAB>=0?"由 A 流向 B，大小 "+fs(flowAB)+" A":"由 B 流向 A，大小 "+fs(-flowAB)+" A（与 A→B 的约定相反）")+"。",
+    "节点 B：I4 流入 B 的量 = "+fs(flowAB)+" A，再加上 B 的其余已知电流：流入合计 = "+fs(sB.sIn)+" A，流出合计（不含 I5）= "+fs(sB.sOut)+" A。",
+    "第 2 步：对 B 列 KCL：I5 的参考方向为"+(refB==="out"?"流出 B":"流入 B")+"，故 I5 = "+(refB==="out"?"流入合计 - 流出合计 = "+fs(sB.sIn)+" - "+fs(sB.sOut):"流出合计 - 流入合计 = "+fs(sB.sOut)+" - "+fs(sB.sIn))+" = "+fs(I5)+" A。",
+    "回代验算：节点 A 流入 - 流出（含 I4 按实际方向计入）= "+fs(sA.net+(refA==="in"?I4:-I4))+" A ✓；节点 B 流入 - 流出（含 I5）= "+fs(sB.net+(refB==="in"?I5:-I5))+" A ✓，两节点都平衡。"];
+  var rows=[["未知电流 I4",fs(I4)+" A（参考方向："+(refA==="out"?"流出 A":"流入 A")+"）"],["未知电流 I5",fs(I5)+" A（参考方向："+(refB==="out"?"流出 B":"流入 B")+"）"]];
+  var note=magNote(Math.max(Math.abs(I4),Math.abs(I5))<=1000,"电流在 A 量级，符合课本习题（若出现 kA 级，多半是把 mA 当成了 A）");
+  var negs=[];
+  if(I4<0) negs.push("I4 = "+fs(I4)+" A 为负：实际方向与所设参考方向相反，即实际流入 A（由 B 侧来）"+fs(-I4)+" A");
+  if(I5<0) negs.push("I5 = "+fs(I5)+" A 为负：实际方向与所设参考方向相反，即实际流入 B "+fs(-I5)+" A");
+  if(negs.length) note+=signDiv(negs.join("；")+"。KCL 里负号只表示方向反了，不是算错——附录答案里的 -1 A 就是这个意思。");
+  renderOut("t16-out",rows,steps,null,note);
+};
+TRAIN.rand.t16=function(){
+  ["t16-a1","t16-a2","t16-a3","t16-b1","t16-b2"].forEach(function(id){ var v=gvRaw(id); if(!isNaN(v)&&v!==0) setV(id,Math.max(1,Math.round(rScale(v,0.7,1.3)))); });
+  TRAIN.calc.t16();
+};
+/* ================= 习题 1.7 开路电压 ================= */
+TRAIN.preset.t17=function(){
+  setV("t17-U1",10); setV("t17-U2",4); setV("t17-U3",2);
+  setV("t17-R1",4); setV("t17-R2",2); setV("t17-R3",5); TRAIN.calc.t17();
+};
+TRAIN.calc.t17=function(){
+  var U1=gv("t17-U1"),U2=gv("t17-U2"),U3=gv("t17-U3"),R1=gv("t17-R1"),R2=gv("t17-R2"),R3=gv("t17-R3");
+  if([U1,U2,U3,R1,R2,R3].some(isNaN)||R1<=0||R2<=0||R3<=0){ bad("t17-out","请填 U1、U2、U3 与 R1、R2、R3（电阻大于 0）。"); return; }
+  var I=(U1-U2)/(R1+R2), drop3=0*R3, U4=U3+I*R2;
+  var steps=["拓扑与极性（按图 1-24）：闭合回路里有 U1、U2（反向串联）与 R1、R2；开路支路里有 R3，电流为零；开路端口的 KVL 路径经过 R2 支路与 U3。",
+    "第 1 步：回路电流 I = (U1 - U2) / (R1 + R2) = ("+fs(U1)+" - "+fs(U2)+") / ("+fs(R1)+" + "+fs(R2)+") = "+fs(U1-U2)+" / "+fs(R1+R2)+" = "+fs(I)+" A",
+    "第 2 步：开路支路电流 = 0，所以 R3 上的压降 = 0 * R3 = 0 * "+fs(R3)+" = 0 V —— R3 的数值（"+fs(R3)+" Ω）不进入 U4，这正是出题人放的干扰项。",
+    "第 3 步：沿端口路径写 KVL：从端子 2 出发，经 U3（升 "+fs(U3)+" V）、再经 R2 支路（与回路电流同向的压降 I * R2 = "+fs(I)+" * "+fs(R2)+" = "+fs(I*R2)+" V），到达端子 1：",
+    "        U4 = U3 + I * R2 = "+fs(U3)+" + "+fs(I*R2)+" = "+fs(U4)+" V",
+    "回代验算：回路 KVL：I * (R1 + R2) + U2 = "+fs(I*(R1+R2))+" + "+fs(U2)+" = "+fs(I*(R1+R2)+U2)+" V，应等于 U1 = "+fs(U1)+" V ✓；端口路径复核：U4 - U3 - I * R2 = "+fs(U4-U3-I*R2)+" V ✓"];
+  var note=magNote(Math.abs(U4)<=1000&&Math.abs(I)<=1000,"U4 = "+fs(U4)+" V、回路电流 "+fs(I)+" A，量级正常");
+  var negs=[];
+  if(I<0) negs.push("回路电流 I 为负：实际绕行方向与假设方向相反，U4 公式中的 I * R2 带符号代入即可，不用改公式");
+  if(U4<0) negs.push("U4 为负：表示端子 1 实际电位低于端子 2（与所标 +、- 极性相反），不是算错");
+  if(negs.length) note+=signDiv(negs.join("；")+"。");
+  renderOut("t17-out",[["回路电流 I",fmtI(I)],["R3 压降","0 V（开路，电流为零）"],["开路电压 U4",fs(U4)+" V"]],steps,null,note);
+};
+TRAIN.rand.t17=function(){
+  [["t17-U1"],["t17-U2"],["t17-U3"]].forEach(function(x){ var v=gv(x[0]); if(!isNaN(v)) setV(x[0],nice3(rScale(v,0.7,1.3))); });
+  ["t17-R1","t17-R2","t17-R3"].forEach(function(id){ var v=gv(id); if(!isNaN(v)) setV(id,nice3(rScale(v,0.7,1.3))); });
+  TRAIN.calc.t17();
+};
+/* ================= 习题 1.12 节点电位 ================= */
+TRAIN.preset.t112=function(){
+  setV("t112-E1",50); setV("t112-Ra",10); setV("t112-E2",-50); setV("t112-Rb",5); setV("t112-Rc",20); TRAIN.calc.t112();
+};
+TRAIN.calc.t112=function(){
+  var E1=gv("t112-E1"),Ra=gv("t112-Ra"),E2=gv("t112-E2"),Rb=gv("t112-Rb"),Rc=gv("t112-Rc");
+  if([E1,Ra,E2,Rb,Rc].some(isNaN)||Ra<=0||Rb<=0||Rc<=0){ bad("t112-out","请填 E1、Ra、E2、Rb、Rc（电阻大于 0，E2 带符号）。"); return; }
+  var G1=1/Ra,G2=1/Rb,G3=1/Rc,Gs=G1+G2+G3, num=E1*G1+E2*G2, VA=num/Gs;
+  var Ia=(VA-E1)/Ra, Ib=(VA-E2)/Rb, Ic=VA/Rc;
+  var steps=["对节点 A 列 KCL（电流以流出 A 为正）：(VA - E1) / Ra + (VA - E2) / Rb + VA / Rc = 0。",
+    "第 1 步：各支路电导：1 / Ra = 1 / "+fs(Ra)+" = "+fs(G1)+" S；1 / Rb = 1 / "+fs(Rb)+" = "+fs(G2)+" S；1 / Rc = 1 / "+fs(Rc)+" = "+fs(G3)+" S；合计 = "+fs(Gs)+" S",
+    "第 2 步：把方程展开：VA * (1/Ra + 1/Rb + 1/Rc) = E1 / Ra + E2 / Rb = "+fs(E1)+" * "+fs(G1)+" + ("+fs(E2)+") * "+fs(G2)+" = "+fs(E1*G1)+" + ("+fs(E2*G2)+") = "+fs(num)+" A",
+    "第 3 步：VA = "+fs(num)+" / "+fs(Gs)+" = "+fs(VA)+" V",
+    "第 4 步：三条支路的流出电流：到 E1 支路 (VA - E1) / Ra = ("+fs(VA)+" - "+fs(E1)+") / "+fs(Ra)+" = "+fs(Ia)+" A；到 E2 支路 (VA - E2) / Rb = "+fs(Ib)+" A；到地支路 VA / Rc = "+fs(Ic)+" A（负值表示实际流入 A）",
+    "回代验算：三条支路流出电流之和 = "+fs(Ia)+" + "+fs(Ib)+" + "+fs(Ic)+" = "+fs(Ia+Ib+Ic)+" A，应等于 0（KCL）✓"];
+  var rows=[["A 点电位 VA",fs(VA)+" V"],["支路电流（流出为正）",fs(Ia)+" A / "+fs(Ib)+" A / "+fs(Ic)+" A"]];
+  var lo=Math.min(E1,E2,0), hi=Math.max(E1,E2,0);
+  var note=magNote(VA>=lo-0.01&&VA<=hi+0.01,"VA = "+fs(VA)+" V 落在最低电源（"+fs(lo)+" V）与最高电源（"+fs(hi)+" V）之间——节点电压是各电源按电导加权的平均，必然在这个区间内，超出就是算错");
+  if(VA<0) note+=signDiv("VA = "+fs(VA)+" V 为负：表示 A 点电位比参考点（地，0 V）低 "+fs(-VA)+" V。原题答案 -14.3 V 的负号就是这个意思，不是算错。");
+  renderOut("t112-out",rows,steps,null,note);
+};
+TRAIN.rand.t112=function(){
+  ["t112-E1","t112-E2"].forEach(function(id){ var v=gv(id); if(!isNaN(v)&&v!==0) setV(id,nice3(rScale(v,0.75,1.25))); });
+  ["t112-Ra","t112-Rb","t112-Rc"].forEach(function(id){ var v=gv(id); if(!isNaN(v)) setV(id,nice3(rScale(v,0.7,1.3))); });
+  TRAIN.calc.t112();
+};
+</script>
+<script>
+"use strict";
+/* ================= 习题 2.1 开关等效电阻 ================= */
+function bridgeSVG(closed,Ra,Rb,Rc,Rd,Re){
+  var W=360,H=204, TL=[74,42], TR=[292,42], BR=[292,158], BL=[74,158];
+  function rbox(cx,cy,rot){ return '<rect x="'+(cx-27)+'" y="'+(cy-9)+'" width="54" height="18" fill="var(--card)" stroke="'+C_INK+'" stroke-width="2" transform="rotate('+rot+' '+cx+' '+cy+')"/>'; }
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="图 2-41 桥式网络（开关'+(closed?"闭合":"断开")+'）">';
+  s+='<circle cx="26" cy="42" r="3.5" fill="none" stroke="'+C_INK+'" stroke-width="2"/><text x="26" y="26" font-size="13" font-weight="700" fill="'+C_INK+'" text-anchor="middle">a</text>';
+  s+='<circle cx="26" cy="158" r="3.5" fill="none" stroke="'+C_INK+'" stroke-width="2"/><text x="26" y="180" font-size="13" font-weight="700" fill="'+C_INK+'" text-anchor="middle">b</text>';
+  s+='<line x1="30" y1="42" x2="74" y2="42" stroke="'+C_INK+'" stroke-width="2"/><line x1="30" y1="158" x2="74" y2="158" stroke="'+C_INK+'" stroke-width="2"/>';
+  s+='<line x1="74" y1="42" x2="292" y2="42" stroke="'+C_INK+'" stroke-width="1.6"/>';
+  s+='<line x1="74" y1="158" x2="292" y2="158" stroke="'+C_INK+'" stroke-width="1.6"/>';
+  s+='<line x1="74" y1="42" x2="74" y2="158" stroke="'+C_INK+'" stroke-width="1.6"/>';
+  s+='<line x1="74" y1="42" x2="292" y2="158" stroke="'+C_INK+'" stroke-width="1.2"/>';
+  s+='<line x1="74" y1="158" x2="292" y2="42" stroke="'+C_INK+'" stroke-width="1.2"/>';
+  s+=rbox(183,42,0)+'<text x="183" y="26" font-size="12.5" font-weight="700" fill="'+C_INK+'" text-anchor="middle">Ra = '+fmtR(Ra)+'</text>';
+  s+=rbox(183,158,0)+'<text x="183" y="188" font-size="12.5" font-weight="700" fill="'+C_INK+'" text-anchor="middle">Rd = '+fmtR(Rd)+'</text>';
+  s+=rbox(74,100,90)+'<text x="46" y="104" font-size="12.5" font-weight="700" fill="'+C_INK+'" text-anchor="middle">Re = '+fmtR(Re)+'</text>';
+  s+=rbox(140,76,28)+'<text x="112" y="58" font-size="12.5" font-weight="700" fill="'+C_INK+'" text-anchor="middle">Rb = '+fmtR(Rb)+'</text>';
+  s+=rbox(226,124,-28)+'<text x="252" y="146" font-size="12.5" font-weight="700" fill="'+C_INK+'" text-anchor="middle">Rc = '+fmtR(Rc)+'</text>';
+  if(closed){
+    s+='<line x1="292" y1="42" x2="292" y2="158" stroke="'+C_INK+'" stroke-width="2.4"/>';
+    s+='<text x="306" y="104" font-size="12.5" font-weight="700" fill="'+C_A+'">S 闭合</text>';
+  } else {
+    s+='<line x1="292" y1="42" x2="292" y2="86" stroke="'+C_INK+'" stroke-width="2"/>';
+    s+='<line x1="292" y1="114" x2="292" y2="158" stroke="'+C_INK+'" stroke-width="2"/>';
+    s+='<line x1="292" y1="114" x2="272" y2="90" stroke="'+C_INK+'" stroke-width="2.4"/>';
+    s+='<text x="306" y="104" font-size="12.5" font-weight="700" fill="'+C_I+'">S 断开</text>';
+  }
+  return s+'</svg>';
+}
+TRAIN.preset.t21=function(){ ["Ra","Rb","Rc","Rd"].forEach(function(k){ setV("t21-"+k,30); }); setV("t21-Re",60); TRAIN.calc.t21(); };
+TRAIN.calc.t21=function(){
+  var Ra=gv("t21-Ra"),Rb=gv("t21-Rb"),Rc=gv("t21-Rc"),Rd=gv("t21-Rd"),Re=gv("t21-Re");
+  if([Ra,Rb,Rc,Rd,Re].some(isNaN)||[Ra,Rb,Rc,Rd,Re].some(function(r){return r<=0;})){ bad("t21-out","请填 Ra、Rb、Rc、Rd、Re（都大于 0）。"); return; }
+  var p1=Ra+Rc, p2=Rb+Rd, Go=1/p1+1/p2+1/Re, Ro=1/Go;
+  var s1=Ra*Rb/(Ra+Rb), s2=Rc*Rd/(Rc+Rd), ser=s1+s2, Gc=1/ser+1/Re, Rcl=1/Gc;
+  var steps=["【S 断开】右侧竖边断开，电流从 a 进、b 出有三条并联通路：",
+    "第 1 步：通路一（上横 + 下斜）：Ra + Rc = "+fs(Ra)+" + "+fs(Rc)+" = "+fs(p1)+" Ω",
+    "第 2 步：通路二（上斜 + 下横）：Rb + Rd = "+fs(Rb)+" + "+fs(Rd)+" = "+fs(p2)+" Ω",
+    "第 3 步：通路三就是左竖 Re = "+fs(Re)+" Ω。三条通路并联：1 / Rab = 1 / "+fs(p1)+" + 1 / "+fs(p2)+" + 1 / "+fs(Re)+" = "+fs(Go)+" S",
+    "        Rab（断开）= 1 / "+fs(Go)+" = "+fs(Ro)+" Ω",
+    "【S 闭合】右侧两节点被开关短接成同一点，先并联再串联：",
+    "第 4 步：Ra 与 Rb 并联（都接在 a 与短接点之间）：Ra // Rb = "+fs(Ra)+" * "+fs(Rb)+" / ("+fs(Ra)+" + "+fs(Rb)+") = "+fs(Ra*Rb)+" / "+fs(Ra+Rb)+" = "+fs(s1)+" Ω",
+    "第 5 步：Rc 与 Rd 并联（短接点与 b 之间）：Rc // Rd = "+fs(Rc)+" * "+fs(Rd)+" / ("+fs(Rc)+" + "+fs(Rd)+") = "+fs(s2)+" Ω",
+    "第 6 步：两段串联："+fs(s1)+" + "+fs(s2)+" = "+fs(ser)+" Ω；再与 Re 并联：1 / Rab = 1 / "+fs(ser)+" + 1 / "+fs(Re)+" = "+fs(Gc)+" S",
+    "        Rab（闭合）= 1 / "+fs(Gc)+" = "+fs(Rcl)+" Ω",
+    "符号检查：等效电阻恒为正，本题没有负号结果 ✓",
+    "回代验算：断开状态用通路电导复核："+fs(p1)+" Ω、"+fs(p2)+" Ω、"+fs(Re)+" Ω 三条通路的电导和 = "+fs(Go)+" S，取倒数 = "+fs(1/Go)+" Ω = Rab（断开）✓；闭合状态同理 = "+fs(1/Gc)+" Ω ✓"];
+  var note=magNote(Ro<=Math.min(p1,p2,Re)+1e-9&&Rcl<=Re+1e-9,"并联的结果必然小于参与并联的每条通路：断开 Rab = "+fs(Ro)+" Ω 小于三条通路中最小的 "+fs(Math.min(p1,p2,Re))+" Ω ✓。原题两种状态恰好都等于 20 Ω，是桥式平衡的巧合，换数后一般不相等。");
+  var figs='<div class="figbox"><h3>S 断开时的连接（图 2-41 重画，数值为本次输入）</h3>'+bridgeSVG(false,Ra,Rb,Rc,Rd,Re)+'<p class="figcap">三条通路：上横+下斜、上斜+下横、左竖 Re，彼此并联。</p></div>'+
+    '<div class="figbox"><h3>S 闭合时的连接（右侧短接）</h3>'+bridgeSVG(true,Ra,Rb,Rc,Rd,Re)+'<p class="figcap">右侧竖边被 S 短接：Ra//Rb 在上段、Rc//Rd 在下段，两段串联后与 Re 并联。</p></div>';
+  renderOut("t21-out",[["Rab（S 断开）",fmtR(Ro)],["Rab（S 闭合）",fmtR(Rcl)]],steps,figs,note);
+};
+TRAIN.rand.t21=function(){
+  ["Ra","Rb","Rc","Rd","Re"].forEach(function(k){ var v=gv("t21-"+k); if(!isNaN(v)) setV("t21-"+k,Math.max(2,Math.round(rScale(v,0.7,1.3)))); });
+  TRAIN.calc.t21();
+};
+/* ================= 习题 2.7 电源等效变换 ================= */
+TRAIN.preset.t27=function(){
+  setV("t27-U1",6); setV("t27-Ra",3); setV("t27-U2",12); setV("t27-Rb",6);
+  setV("t27-Rs",2); setV("t27-Uo",2); setV("t27-Rl",2); TRAIN.calc.t27();
+};
+TRAIN.calc.t27=function(){
+  var U1=gv("t27-U1"),Ra=gv("t27-Ra"),U2=gv("t27-U2"),Rb=gv("t27-Rb"),Rs=gv("t27-Rs"),Uo=gv("t27-Uo"),Rl=gv("t27-Rl");
+  if([U1,Ra,U2,Rb,Rs,Uo,Rl].some(isNaN)||Ra<=0||Rb<=0||Rs<0||Rl<=0){ bad("t27-out","请填两条支路的电压源与电阻、串联支路、反向电源与负载（电阻大于 0）。"); return; }
+  var Isa=U1/Ra, Isb=U2/Rb, Is=Isa+Isb, Rp=Ra*Rb/(Ra+Rb), Useq=Is*Rp, Rtot=Rp+Rs+Rl, Inet=Useq-Uo, I=Inet/Rtot;
+  var steps=["变换规则：实际电压源（Us 串 R）↔ 实际电流源（Is 并 R），Is = Us / R，电阻数值不变，方向对齐正极。",
+    "第 1 步（对应解法图 b）：支路 1 变换：Is1 = Us1 / Ra = "+fs(U1)+" / "+fs(Ra)+" = "+fs(Isa)+" A，电阻 "+fs(Ra)+" Ω 改为并联。",
+    "第 2 步：支路 2 变换：Is2 = Us2 / Rb = "+fs(U2)+" / "+fs(Rb)+" = "+fs(Isb)+" A，电阻 "+fs(Rb)+" Ω 改为并联。",
+    "第 3 步（对应解法图 c）：合并电流源：Is = Is1 + Is2 = "+fs(Isa)+" + "+fs(Isb)+" = "+fs(Is)+" A；并联电阻 Rp = Ra // Rb = "+fs(Ra)+" * "+fs(Rb)+" / ("+fs(Ra)+" + "+fs(Rb)+") = "+fs(Ra*Rb)+" / "+fs(Ra+Rb)+" = "+fs(Rp)+" Ω。",
+    "第 4 步（对应解法图 d）：电流源变回电压源：Useq = Is * Rp = "+fs(Is)+" * "+fs(Rp)+" = "+fs(Useq)+" V，串联电阻仍为 Rp = "+fs(Rp)+" Ω。",
+    "第 5 步：单回路求 I：回路总电阻 = Rp + Rser + Rload = "+fs(Rp)+" + "+fs(Rs)+" + "+fs(Rl)+" = "+fs(Rtot)+" Ω；净电压 = Useq - Uopp = "+fs(Useq)+" - "+fs(Uo)+" = "+fs(Inet)+" V（Uopp 与 Useq 反向串联，要相减）。",
+    "        I = (Useq - Uopp) / R总 = "+fs(Inet)+" / "+fs(Rtot)+" = "+fs(I)+" A，方向与 Useq 驱动方向相同。",
+    "回代验算：I * R总 + Uopp = "+fs(I)+" * "+fs(Rtot)+" + "+fs(Uo)+" = "+fs(I*Rtot+Uo)+" V，应等于 Useq = "+fs(Useq)+" V ✓；再验算变换前后支路 1 端口：电压源端口开路电压 "+fs(U1)+" V，电流源端口开路电压 Is1 * Ra = "+fs(Isa*Ra)+" V，一致 ✓"];
+  var note=magNote(Math.abs(I)>=0.001&&Math.abs(I)<=100,"I = "+fs(I)+" A 在 A 量级。提醒：等效变换只对外电路等效，电源内部的功率并不等效，题目问内部功率时不能用变换后的电路算。");
+  if(I<0) note+=signDiv("I 为负：净电压 (Useq - Uopp) 为负，实际电流方向与图示 I 的参考方向相反——是反向电源更强，不是算错。");
+  renderOut("t27-out",[["支路电流源 Is1 / Is2",fs(Isa)+" A / "+fs(Isb)+" A"],["合并电流源 Is",fs(Is)+" A"],["并联电阻 Rp",fmtR(Rp)],["等效电压源 Useq",fs(Useq)+" V"],["回路总电阻",fmtR(Rtot)],["负载电流 I",fmtI(I)]],steps,null,note);
+};
+TRAIN.rand.t27=function(){
+  [["t27-U1",0.7,1.3],["t27-U2",0.7,1.3],["t27-Ra",0.7,1.3],["t27-Rb",0.7,1.3],["t27-Rs",0.7,1.3],["t27-Rl",0.7,1.3]].forEach(function(x){ var v=gv(x[0]); if(!isNaN(v)) setV(x[0],nice3(rScale(v,x[1],x[2]))); });
+  var uo=gv("t27-Uo"); if(!isNaN(uo)) setV("t27-Uo",nice3(rScale(uo,0.5,1.1)));
+  TRAIN.calc.t27();
+};
+/* ================= 习题 2.8 支路电流法 ================= */
+TRAIN.preset.t28=function(){
+  setV("t28-U1",12); setV("t28-R1",3); setV("t28-U2",15); setV("t28-R2",1.5); setV("t28-R3",9); TRAIN.calc.t28();
+};
+TRAIN.calc.t28=function(){
+  var U1=gv("t28-U1"),R1=gv("t28-R1"),U2=gv("t28-U2"),R2=gv("t28-R2"),R3=gv("t28-R3");
+  if([U1,R1,U2,R2,R3].some(isNaN)||R1<=0||R2<=0||R3<=0){ bad("t28-out","请填 Us1、R1、Us2、R2、R3（电阻大于 0）。"); return; }
+  var a11=R1+R3, a12=R3, a21=R3, a22=R2+R3, det=a11*a22-a21*a12;
+  if(Math.abs(det)<1e-12){ bad("t28-out","方程组无唯一解（行列式为 0），请检查电阻数值。"); return; }
+  var I2=(a11*U2-a21*U1)/det, I1=(U1-a12*I2)/a11, I3=I1+I2, Un=I3*R3;
+  var steps=["设未知数与参考方向：I1（支路 1，自 Us1 正极流向节点）、I2（支路 2，自 Us2 正极流向节点）、I3（经 R3 流出节点）。",
+    "列方程：KCL：I1 + I2 = I3 ……（1）",
+    "        KVL（左回路，Us1 与 R3）：R1 * I1 + R3 * I3 = Us1 ……（2）",
+    "        KVL（右回路，Us2 与 R3）：R2 * I2 + R3 * I3 = Us2 ……（3）",
+    "第 1 步：把（1）的 I3 = I1 + I2 代入（2）（3），消去 I3：",
+    "        （2'）("+fs(R1)+" + "+fs(R3)+") * I1 + "+fs(R3)+" * I2 = "+fs(U1)+"，即 "+fs(a11)+" * I1 + "+fs(a12)+" * I2 = "+fs(U1),
+    "        （3'）"+fs(R3)+" * I1 + ("+fs(R2)+" + "+fs(R3)+") * I2 = "+fs(U2)+"，即 "+fs(a21)+" * I1 + "+fs(a22)+" * I2 = "+fs(U2),
+    "第 2 步：消元求 I2：（2'）两边乘 "+fs(a21)+"，（3'）两边乘 "+fs(a11)+"，再相减消去 I1：",
+    "        ("+fs(a11)+" * "+fs(a22)+" - "+fs(a21)+" * "+fs(a12)+") * I2 = "+fs(a11)+" * "+fs(U2)+" - "+fs(a21)+" * "+fs(U1),
+    "        即 "+fs(det)+" * I2 = "+fs(a11*U2-a21*U1)+"，解得 I2 = "+fs(a11*U2-a21*U1)+" / "+fs(det)+" = "+fs(I2)+" A",
+    "第 3 步：回代（2'）求 I1：I1 = (Us1 - "+fs(a12)+" * I2) / "+fs(a11)+" = ("+fs(U1)+" - "+fs(a12)+" * "+fs(I2)+") / "+fs(a11)+" = ("+fs(U1)+" - "+fs(a12*I2)+") / "+fs(a11)+" = "+fs(I1)+" A",
+    "第 4 步：由 KCL 求 I3：I3 = I1 + I2 = "+fs(I1)+" + "+fs(I2)+" = "+fs(I3)+" A；节点电压 U = I3 * R3 = "+fs(I3)+" * "+fs(R3)+" = "+fs(Un)+" V（交叉验算用）",
+    "回代验算 KVL（2）：R1 * I1 + R3 * I3 = "+fs(R1)+" * "+fs(I1)+" + "+fs(R3)+" * "+fs(I3)+" = "+fs(R1*I1)+" + "+fs(R3*I3)+" = "+fs(R1*I1+R3*I3)+" V，应等于 Us1 = "+fs(U1)+" V ✓",
+    "回代验算 KVL（3）：R2 * I2 + R3 * I3 = "+fs(R2*I2)+" + "+fs(R3*I3)+" = "+fs(R2*I2+R3*I3)+" V，应等于 Us2 = "+fs(U2)+" V ✓；KCL：I1 + I2 - I3 = "+fs(I1+I2-I3)+" ✓"];
+  var note=magNote(Math.max(Math.abs(I1),Math.abs(I2),Math.abs(I3))<=1000,"三条支路电流都在 A 量级，节点电压 "+fs(Un)+" V 介于两电源之间，合理");
+  var negs=[];
+  if(I1<0) negs.push("I1 = "+fs(I1)+" A 为负：节点电压 U = "+fs(Un)+" V 高于 Us1 = "+fs(U1)+" V，支路 1 被节点反向顶回电流，实际方向与参考方向相反（该电源实际在被充电/吸收电流）");
+  if(I2<0) negs.push("I2 = "+fs(I2)+" A 为负：节点电压高于 Us2 = "+fs(U2)+" V，支路 2 实际电流反向");
+  if(I3<0) negs.push("I3 为负：R3 支路实际电流向上，与所设流出方向相反");
+  if(negs.length) note+=signDiv(negs.join("；")+"。支路电流法里负号只说明方向，不用改答案——附录的 I1 = -0.2 A 就是这么来的。");
+  renderOut("t28-out",[["支路电流 I1",fmtI(I1)],["支路电流 I2",fmtI(I2)],["支路电流 I3",fmtI(I3)],["节点电压 U（验算）",fs(Un)+" V"]],steps,null,note);
+};
+TRAIN.rand.t28=function(){
+  [["t28-U1"],["t28-U2"]].forEach(function(x){ var v=gv(x[0]); if(!isNaN(v)) setV(x[0],nice3(rScale(v,0.75,1.25))); });
+  ["t28-R1","t28-R2","t28-R3"].forEach(function(id){ var v=gv(id); if(!isNaN(v)) setV(id,nice3(rScale(v,0.7,1.3))); });
+  TRAIN.calc.t28();
+};
+/* ================= 习题 2.11 叠加定理 ================= */
+var t211Mode="a";
+function setT211(m){
+  t211Mode=m;
+  document.querySelectorAll("[data-t211]").forEach(function(b){ b.setAttribute("aria-pressed",b.getAttribute("data-t211")===m?"true":"false"); });
+  $("t211-a").style.display=(m==="a")?"block":"none";
+  $("t211-b").style.display=(m==="b")?"block":"none";
+}
+document.querySelectorAll("[data-t211]").forEach(function(b){ b.addEventListener("click",function(){ setT211(b.getAttribute("data-t211")); }); });
+TRAIN.preset.t211a=function(){
+  setT211("a");
+  setV("t211a-R1",0.1); setV("t211a-R2",0.3); setV("t211a-Is",0.5); setSel("t211a-Is-u",1);
+  setV("t211a-Us",80); setSel("t211a-Us-u",0.001); TRAIN.calc.t211();
+};
+TRAIN.preset.t211b=function(){
+  setT211("b");
+  setV("t211b-R1",10); setV("t211b-R2",40); setV("t211b-U1",3); setV("t211b-U2",1); setV("t211b-U3",-2); TRAIN.calc.t211();
+};
+TRAIN.calc.t211=function(){
+  if(t211Mode==="a"){
+    var R1=gv("t211a-R1"),R2=gv("t211a-R2"),Is=gv("t211a-Is"),Us=gv("t211a-Us");
+    if([R1,R2,Is,Us].some(isNaN)||R1<=0||R2<=0){ bad("t211-out","请填 (a) 的 R1、R2、Is、Us（电阻大于 0）。"); return; }
+    var x1=R1/(R1+R2)*Is, x2=-Us/(R1+R2), ix=x1+x2;
+    var steps=["(a) 已知：R1 = "+fs(R1)+" Ω，R2 = "+fs(R2)+" Ω，电流源 Is = "+fs(Is)+" A（向上），电压源 Us = "+fs(Us)+" V，ix 为下边导线的回流电流（参考方向向左）。",
+      "第 1 步：电流源单独作用，电压源短路。Is 在 R1 与 R2 两条通路间分流，回到下边的 ix' 取 R1 通路那份：",
+      "        ix' = R1 / (R1 + R2) * Is = "+fs(R1)+" / ("+fs(R1)+" + "+fs(R2)+") * "+fs(Is)+" = "+fs(R1)+" / "+fs(R1+R2)+" * "+fs(Is)+" = "+fs(x1)+" A",
+      "第 2 步：电压源单独作用，电流源开路。Us 驱动 R1 + R2 串联回路，电流方向与 ix 参考方向相反，带负号：",
+      "        ix'' = -Us / (R1 + R2) = -"+fs(Us)+" / "+fs(R1+R2)+" = "+fs(x2)+" A",
+      "第 3 步：叠加（代数相加，分量的符号不能丢）：ix = ix' + ix'' = "+fs(x1)+" + ("+fs(x2)+") = "+fs(ix)+" A",
+      "回代验算：分量之和 "+fs(x1)+" + ("+fs(x2)+") = "+fs(x1+x2)+" A = ix ✓"+((R1===0.1&&R2===0.3&&Is===0.5&&Math.abs(Us-0.08)<1e-9)?"（附录答案 -0.075 A）":"")];
+    var noteA=magNote(Math.abs(ix)<=100,"ix = "+fs(ix)+" A，量级与 0.5 A 电流源、80 mV 电压源相符");
+    if(ix<0) noteA+=signDiv("ix 为负：实际回流方向与参考方向（向左）相反，即电流实际向右回流。叠加时分量的负号来自参考方向，千万不能在相加前先取绝对值。");
+    renderOut("t211-out",[["分量 ix'（电流源）",fs(x1)+" A"],["分量 ix''（电压源）",fs(x2)+" A"],["ix = ix' + ix''",fs(ix)+" A"]],steps,null,noteA);
+  } else {
+    var R1b=gv("t211b-R1"),R2b=gv("t211b-R2"),U1=gv("t211b-U1"),U2=gv("t211b-U2"),U3=gv("t211b-U3");
+    if([R1b,R2b,U1,U2,U3].some(isNaN)||R1b<=0||R2b<=0){ bad("t211-out","请填 (b) 的 R1、R2、Us1、Us2、Us3（电阻大于 0，Us3 可负）。"); return; }
+    var y1=-U1/R1b, y2a=U2/R1b, y2b=U2/R2b, y2=y2a+y2b, y3=-U3/R2b, ix2=y1+y2+y3;
+    var steps=["(b) 已知：R1 = "+fs(R1b)+" Ω（左段），R2 = "+fs(R2b)+" Ω（右段），Us1 = "+fs(U1)+" V（左支路），Us2 = "+fs(U2)+" V（中间支路，ix 在此支路、参考方向向上），Us3 = "+fs(U3)+" V（右支路）。其余电压源短路。",
+      "第 1 步：Us1 单独作用（Us2、Us3 短路）：Us1 经 R1 与短路的中间支路成回路，电流自上而下流过中间支路，与 ix 参考方向（向上）相反：",
+      "        ix1 = -Us1 / R1 = -"+fs(U1)+" / "+fs(R1b)+" = "+fs(y1)+" A",
+      "第 2 步：Us2 单独作用（Us1、Us3 短路）：Us2 向左右两条通路供电，两份电流都汇入中间支路向上：",
+      "        ix2 = Us2 / R1 + Us2 / R2 = "+fs(U2)+" / "+fs(R1b)+" + "+fs(U2)+" / "+fs(R2b)+" = "+fs(y2a)+" + "+fs(y2b)+" = "+fs(y2)+" A",
+      "第 3 步：Us3 单独作用（Us1、Us2 短路）：Us3 经 R2 与短路的中间支路成回路：",
+      "        ix3 = -Us3 / R2 = -("+fs(U3)+") / "+fs(R2b)+" = "+fs(y3)+" A"+(U3<0?"（注意：-（负数）= 正数，负负得正。交流群图里这一行误写成 -1/20，是笔误；其求和用的正是 +1/20，本程序按正确的 + 号计算）":""),
+      "第 4 步：叠加：ix = ix1 + ix2 + ix3 = "+fs(y1)+" + "+fs(y2)+" + "+fs(y3)+" = "+fs(ix2)+" A",
+      "回代验算：三个分量代数和 = "+fs(y1+y2+y3)+" A = ix ✓"+((R1b===10&&R2b===40&&U1===3&&U2===1&&U3===-2)?"（附录答案 -0.125 A）":"")];
+    var noteB=magNote(Math.abs(ix2)<=100,"ix = "+fs(ix2)+" A，量级正常");
+    if(ix2<0) noteB+=signDiv("ix 为负：中间支路电流实际向下，与所设向上参考方向相反。三个分量里 ix3 是正的——正是群里图写滑的那一项，符号错最容易发生在这一步，已记入错因时优先点「符号错」复盘。");
+    renderOut("t211-out",[["分量 ix1（Us1）",fs(y1)+" A"],["分量 ix2（Us2）",fs(y2)+" A"],["分量 ix3（Us3）",fs(y3)+" A"],["ix = ix1 + ix2 + ix3",fs(ix2)+" A"]],steps,null,noteB);
+  }
+};
+TRAIN.rand.t211=function(){
+  if(t211Mode==="a"){
+    ["t211a-R1","t211a-R2"].forEach(function(id){ var v=gv(id); if(!isNaN(v)) setV(id,nice3(rScale(v,0.7,1.3))); });
+    var isv=gv("t211a-Is"); if(!isNaN(isv)) setV("t211a-Is",nice3(rScale(isv,0.7,1.3)));
+    var usv=gv("t211a-Us"); if(!isNaN(usv)) setV("t211a-Us",nice3(rScale(usv,0.7,1.3)));
+  } else {
+    ["t211b-R1","t211b-R2"].forEach(function(id){ var v=gv(id); if(!isNaN(v)) setV(id,Math.max(2,Math.round(rScale(v,0.7,1.3)))); });
+    ["t211b-U1","t211b-U2"].forEach(function(id){ var v=gv(id); if(!isNaN(v)) setV(id,nice3(rScale(v,0.7,1.3))); });
+    var u3=gv("t211b-U3"); if(!isNaN(u3)) setV("t211b-U3",nice3(-Math.abs(rScale(u3,0.7,1.3))));
+  }
+  TRAIN.calc.t211();
+};
+</script>
+<script>
+"use strict";
+/* ================= 习题 3.4 相量 KCL/KVL ================= */
+TRAIN.preset.t34=function(){
+  setV("t34-U2m",10); setV("t34-U2a",0); setV("t34-U3m",5); setV("t34-U3a",30);
+  setV("t34-I1m",3); setV("t34-I1a",0); setV("t34-I3m",1); setV("t34-I3a",45); TRAIN.calc.t34();
+};
+TRAIN.calc.t34=function(){
+  function rect(m,a){ var r=a*Math.PI/180; return CX(m*Math.cos(r), m*Math.sin(r)); }
+  function rd(id){ return gvRaw(id); }
+  var U2m=rd("t34-U2m"),U2a=rd("t34-U2a"),U3m=rd("t34-U3m"),U3a=rd("t34-U3a"),
+      I1m=rd("t34-I1m"),I1a=rd("t34-I1a"),I3m=rd("t34-I3m"),I3a=rd("t34-I3a");
+  if([U2m,U2a,U3m,U3a,I1m,I1a,I3m,I3a].some(isNaN)){ bad("t34-out","请把 U2、U3、I1、I3 的模和角度都填上。"); return; }
+  var U2=rect(U2m,U2a), U3=rect(U3m,U3a), I1=rect(I1m,I1a), I3=rect(I3m,I3a);
+  var U1=cadd(U2,U3), U4=CX(-U3.r,-U3.i), I4=csub(CX(-I1.r,-I1.i),I3);
+  var steps=["先把每个相量写成代数式（实部 = 模 * cos 角，虚部 = 模 * sin 角）：",
+    "U2 点 = "+fs(U2m)+"∠"+fAng(U2a)+"° = "+fcx(U2)+" V；U3 点 = "+fs(U3m)+"∠"+fAng(U3a)+"° = "+fs(U3m)+" * cos("+fAng(U3a)+"°) + j * "+fs(U3m)+" * sin("+fAng(U3a)+"°) = "+fcx(U3)+" V",
+    "I1 点 = "+fcx(I1)+" A；I3 点 = "+fs(I3m)+"∠"+fAng(I3a)+"° = "+fcx(I3)+" A",
+    "第 1 步（KVL）：U1 点 = U2 点 + U3 点 = ("+fcx(U2)+") + ("+fcx(U3)+") = "+fcx(U1)+" V",
+    "        "+polSteps(U1,"U1 点"),
+    "第 2 步（KVL，极性相反）：U4 点 = -U3 点 = -("+fcx(U3)+") = "+fcx(U4)+" V = "+fpolOf(U4,"V")+"（模不变，角度加/减 180°）",
+    "第 3 步（KCL）：I4 点 = -I1 点 - I3 点 = -("+fcx(I1)+") - ("+fcx(I3)+") = "+fcx(I4)+" A",
+    "        "+polSteps(I4,"I4 点"),
+    "回代验算：U1 - U2 - U3 = "+fcx(csub(csub(U1,U2),U3))+" ≈ 0 ✓；I1 + I3 + I4 = "+fcx(cadd(cadd(I1,I3),I4))+" ≈ 0（KCL：三条支路电流相量和为零）✓"];
+  if(U2m===10&&U2a===0&&U3m===5&&U3a===30&&I1m===3&&I1a===0&&I3m===1&&I3a===45){
+    steps.push("附录对照：U1 = 14.55∠9.9° V、U4 = 5∠-150° V、I4 = 3.77∠-169.2° A。本程序按 3 位有效数字显示 |U1| = 14.5，附录保留了 4 位（14.55），其余一致。");
+  }
+  var rows=[["U1 点",fpolOf(U1,"V")+"（= "+fcx(U1)+"）"],["U4 点",fpolOf(U4,"V")],["I4 点",fpolOf(I4,"A")+"（= "+fcx(I4)+"）"]];
+  var pU1=cpol(U1), pI4=cpol(I4);
+  var note=magNote(pU1[0]<=U2m+U3m+1e-9,"三角形不等式：|U1| = "+f3(pU1[0])+" V 不大于 |U2| + |U3| = "+fs(U2m+U3m)+" V ✓。若你手算的模比这个还大，必是把模直接相加了。");
+  note+=signDiv("I4 点的角度 "+fAng(pI4[1])+"° 落在第三象限（实部、虚部都为负）：它与 I1、I3 的方向大致相反，这来自 KCL 式前面的负号——参考方向决定的，不是算错。角度必须按象限取，光按计算器 arctan 会得到 "+fAng(Math.atan(I4.i/I4.r)*180/Math.PI)+"°，差了 180°。");
+  var figs='<div class="figbox"><h3>电压相量图（U1、U2、U3，独立比例）</h3>'+phasorMultiSVG([{mag:U2m,ang:U2a,color:C_A,label:"U2"},{mag:U3m,ang:U3a,color:C_UL,label:"U3"},{mag:pU1[0],ang:pU1[1],color:C_U,label:"U1"}])+
+    '<p class="figcap">比例尺：满幅 100 px = '+f3(Math.max(U2m,U3m,pU1[0]))+' V。青：U2 = '+fpolOf(U2,"V")+'；紫：U3 = '+fpolOf(U3,"V")+'；蓝：U1 = '+fpolOf(U1,"V")+'（= U2 + U3 的相量和）。</p></div>'+
+    '<div class="figbox"><h3>电流相量图（I1、I3、I4，独立比例）</h3>'+phasorMultiSVG([{mag:I1m,ang:I1a,color:C_A,label:"I1"},{mag:I3m,ang:I3a,color:C_UL,label:"I3"},{mag:pI4[0],ang:pI4[1],color:C_I,label:"I4"}])+
+    '<p class="figcap">比例尺：满幅 100 px = '+f3(Math.max(I1m,I3m,pI4[0]))+' A，与电压图分开定标。橙：I4 = '+fpolOf(I4,"A")+'，指向第三象限，与 I1、I3 之和方向相反。</p></div>';
+  renderOut("t34-out",rows,steps,figs,note);
+};
+TRAIN.rand.t34=function(){
+  ["t34-U2m","t34-U3m","t34-I1m","t34-I3m"].forEach(function(id){ var v=gvRaw(id); if(!isNaN(v)) setV(id,nice3(rScale(v,0.7,1.3))); });
+  ["t34-U2a","t34-U3a","t34-I1a","t34-I3a"].forEach(function(id){ var v=gvRaw(id); if(!isNaN(v)) setV(id,Math.round(angNorm(v+(Math.random()*50-25)))); });
+  TRAIN.calc.t34();
+};
+/* ================= 习题 3.5 / 3.6 单电容 / 单电感 ================= */
+var t356El="C", t356Given="u-inst", t356Appx="";
+function setT356El(el){
+  t356El=el;
+  document.querySelectorAll("[data-t356el]").forEach(function(b){ b.setAttribute("aria-pressed",b.getAttribute("data-t356el")===el?"true":"false"); });
+  var lab=$("t356-vlab"), sel=$("t356-V-u");
+  if(el==="C"){ lab.textContent="电容 C"; sel.innerHTML='<option value="0.000001">uF</option><option value="1">F</option><option value="0.000000001">nF</option>'; }
+  else { lab.textContent="电感 L"; sel.innerHTML='<option value="0.001">mH</option><option value="1">H</option><option value="0.000001">uH</option>'; }
+}
+function setT356Given(g){
+  t356Given=g;
+  document.querySelectorAll("[data-t356g]").forEach(function(b){ b.setAttribute("aria-pressed",b.getAttribute("data-t356g")===g?"true":"false"); });
+  var isInst=(g.indexOf("inst")>0);
+  $("t356-glab").textContent=isInst?"已知量的幅值（瞬时值给幅值）":"已知量的有效值（相量给有效值）";
+}
+document.querySelectorAll("[data-t356el]").forEach(function(b){ b.addEventListener("click",function(){ setT356El(b.getAttribute("data-t356el")); }); });
+document.querySelectorAll("[data-t356g]").forEach(function(b){ b.addEventListener("click",function(){ setT356Given(b.getAttribute("data-t356g")); }); });
+TRAIN.preset.t35=function(){
+  setT356El("C"); setT356Given("u-inst");
+  setV("t356-V",4); setSel("t356-V-u",0.000001); setV("t356-f",50); setSel("t356-f-u",1);
+  setV("t356-G",311); setV("t356-P",0);
+  t356Appx="附录对照（3.5）：(1) i = 0.39 sin(314t + 90°) A ✓（本程序精确算得幅值 0.391 A，附录取 0.39）；(2) 若已知 I 点 = 1∠60° A，则 U 点 = 796∠-30° V——把已知量切换为「已知 I 相量」、填 1 与 60° 即可复算。";
+  TRAIN.calc.t356();
+};
+TRAIN.preset.t36=function(){
+  setT356El("L"); setT356Given("i-ph");
+  setV("t356-V",10); setSel("t356-V-u",0.001); setV("t356-f",50); setSel("t356-f-u",1);
+  setV("t356-G",7); setV("t356-P",0);
+  t356Appx="附录对照（3.6）：(1) u = 22√2 sin(314t + 90°) V ✓（幅值 22 * 1.414 = 31.1 V）；(2) 若已知 U 点 = 127∠60° V，则 I 点 = 40.44∠-30° A——把已知量切换为「已知 U 相量」、填 127 与 60° 即可复算（本程序用精确 2πf，电流约 40.4 A）。";
+  TRAIN.calc.t356();
+};
+TRAIN.calc.t356=function(){
+  var V=gv("t356-V"), f=gv("t356-f"), G=gvRaw("t356-G"), P=gvRaw("t356-P");
+  if(isNaN(V)||V<=0||isNaN(f)||f<=0||isNaN(G)||isNaN(P)){ bad("t356-out","请填元件值、频率 f、已知量的大小和初相。"); return; }
+  var isC=(t356El==="C"), w=2*Math.PI*f;
+  var X=isC?1/(w*V):w*V;
+  var qU=(t356Given.charAt(0)==="u"), isInst=(t356Given.indexOf("inst")>0);
+  var gEff=isInst?G/Math.SQRT2:G;
+  var Ueff,Ieff,phu,phi;
+  if(qU){ Ueff=gEff; phu=P; Ieff=Ueff/X; phi=angNorm(isC?P+90:P-90); }
+  else { Ieff=gEff; phi=P; Ueff=Ieff*X; phu=angNorm(isC?P-90:P+90); }
+  var Uamp=Ueff*Math.SQRT2, Iamp=Ieff*Math.SQRT2;
+  function instS(amp,ph,sym,unit){ var p=angNorm(ph); return sym+"(t) = "+f3(amp)+" * sin("+Math.round(w)+"t "+(p<0?"-":"+")+" "+fAng(Math.abs(p))+"°) "+unit; }
+  var xSteps=isC?
+    "第 1 步：容抗 XC = 1 / (2 * π * f * C) = 1 / (2 * 3.1416 * "+f3(f)+" * "+f3(V)+") = 1 / "+f3(w*V)+" = "+f3(X)+" Ω":
+    "第 1 步：感抗 XL = 2 * π * f * L = 2 * 3.1416 * "+f3(f)+" * "+f3(V)+" = "+f3(X)+" Ω";
+  var steps=["元件："+(isC?"电容 C = "+fmtC(V):"电感 L = "+fmtL(V))+"，f = "+f3(f)+" Hz，角频率 ω = 2 * π * f = "+fs(w)+" rad/s（50 Hz 时约 314）。",
+    "已知量："+(qU?"电压":"电流")+"以"+(isInst?"瞬时值":"相量")+"给出，"+(isInst?"幅值 "+f3(G)+"，有效值 = 幅值 / 1.414 = "+f3(gEff):"有效值 "+f3(G))+"，初相 "+fAng(P)+"°。",
+    xSteps,
+    qU?("第 2 步：I = U / "+(isC?"XC":"XL")+" = "+f3(Ueff)+" / "+f3(X)+" = "+f3(Ieff)+" A"):
+       ("第 2 步：U = I * "+(isC?"XC":"XL")+" = "+f3(Ieff)+" * "+f3(X)+" = "+f3(Ueff)+" V"),
+    "第 3 步：相位："+(isC?"电容电流超前电压 90°":"电感电压超前电流 90°")+"。φu = "+fAng(phu)+"°，φi = "+fAng(phi)+"°。",
+    "第 4 步：两种表示：U 点 = "+f3(Ueff)+"∠"+fAng(phu)+"° V，"+instS(Uamp,phu,"u","V")+"；I 点 = "+f3(Ieff)+"∠"+fAng(phi)+"° A，"+instS(Iamp,phi,"i","A")+"。",
+    "回代验算：U / I = "+f3(Ueff)+" / "+f3(Ieff)+" = "+f3(Ueff/Ieff)+" Ω，应等于 "+(isC?"XC":"XL")+" = "+f3(X)+" Ω ✓"];
+  var rows=[[(isC?"容抗 XC":"感抗 XL"),f3(X)+" Ω"],["电压相量 U 点",f3(Ueff)+"∠"+fAng(phu)+"° V"],["电流相量 I 点",f3(Ieff)+"∠"+fAng(phi)+"° A"],["u(t)",instS(Uamp,phu,"u","V")],["i(t)",instS(Iamp,phi,"i","A")]];
+  var note=magNote(X>=0.01&&X<=1e6,(isC?"XC":"XL")+" = "+f3(X)+" Ω 在合理量级。最常见的数量级错误是单位：4 uF 要按 4 * 10^-6 F 代入，若把 4 直接当 F，XC 会小一百万倍——本程序已在输入框里帮你换算好。");
+  note+=signDiv("相位说明：φi - φu = "+fAng(angNorm(phi-phu))+"°，"+(isC?"正号表示电流超前电压 90°（电容的标志）":"负号表示电流滞后电压 90°（电感的标志，换个说法就是电压超前电流 90°）")+"。角度带符号是相位信息，不是算错。");
+  if(t356Appx) note+='<div class="oknote">'+esc(t356Appx)+'</div>';
+  var figs='<div class="figbox"><h3>电压相量图（独立比例）</h3>'+phasorOneSVG(Ueff,phu,C_U,"U","V")+'<p class="figcap">满幅 = '+f3(Ueff)+' V，角度 φu = '+fAng(phu)+'°。</p></div>'+
+    '<div class="figbox"><h3>电流相量图（独立比例）</h3>'+phasorOneSVG(Ieff,phi,C_I,"I","A")+'<p class="figcap">满幅 = '+f3(Ieff)+' A，角度 φi = '+fAng(phi)+'°。与电压图的角度差恒为 90°。</p></div>'+
+    '<div class="figbox"><h3>波形图（上下两栏，各自归一化）</h3>'+waveDualSVG([{amp:Uamp,phaseDeg:phu,color:C_U,label:"u(t)",unit:"V"},{amp:Iamp,phaseDeg:phi,color:C_I,label:"i(t)",unit:"A"}])+'<p class="figcap">上栏 u(t) 幅值 '+f3(Uamp)+' V，下栏 i(t) 幅值 '+f3(Iamp)+' A；对齐横轴看谁先过峰值，就是谁超前。</p></div>';
+  renderOut("t356-out",rows,steps,figs,note);
+};
+TRAIN.rand.t356=function(){
+  var v=gvRaw("t356-V"); if(!isNaN(v)) setV("t356-V",nice3(rScale(v,0.7,1.3)));
+  var g=gvRaw("t356-G"); if(!isNaN(g)) setV("t356-G",nice3(rScale(g,0.7,1.3)));
+  var p=gvRaw("t356-P"); if(!isNaN(p)) setV("t356-P",Math.round(angNorm(p+(Math.random()*40-20))));
+  t356Appx=""; TRAIN.calc.t356();
+};
+/* ================= 习题 3.19 复阻抗分压 ================= */
+function cxSteps(z){ return "("+fcx(z)+")"; }
+TRAIN.preset.t319=function(){
+  setV("t319-Um",100); setV("t319-Ua",0);
+  setV("t319-a-sr",5); setV("t319-a-si",0); setV("t319-a-pr",0); setV("t319-a-pi",5);
+  setV("t319-b-sr",5); setV("t319-b-si",0); setV("t319-b-pr",5); setV("t319-b-pi",-5);
+  setV("t319-c-sr",1); setV("t319-c-si",0); setV("t319-c-1r",0); setV("t319-c-1i",-1); setV("t319-c-2r",1); setV("t319-c-2i",1);
+  TRAIN.calc.t319();
+};
+TRAIN.calc.t319=function(){
+  function Z(a,b){ return CX(gvRaw(a),gvRaw(b)); }
+  var Um=gvRaw("t319-Um"), Ua=gvRaw("t319-Ua");
+  if(isNaN(Um)||isNaN(Ua)){ bad("t319-out","请先填电源相量 Us 的模和角度。"); return; }
+  var Us=CX(Um*Math.cos(Ua*Math.PI/180), Um*Math.sin(Ua*Math.PI/180));
+  var parts=[
+    {n:"(a)", Zs:Z("t319-a-sr","t319-a-si"), Zp:Z("t319-a-pr","t319-a-pi")},
+    {n:"(b)", Zs:Z("t319-b-sr","t319-b-si"), Zp:Z("t319-b-pr","t319-b-pi")},
+    {n:"(c)", Zs:Z("t319-c-sr","t319-c-si"), Z1:Z("t319-c-1r","t319-c-1i"), Z2:Z("t319-c-2r","t319-c-2i")}
+  ];
+  var badIn=false;
+  parts.forEach(function(pt){ [pt.Zs,pt.Zp,pt.Z1,pt.Z2].forEach(function(z){ if(z&&(isNaN(z.r)||isNaN(z.i))) badIn=true; }); });
+  if(badIn){ bad("t319-out","每个阻抗的实部、虚部都要填（没有就填 0）。"); return; }
+  var steps=["电源：Us 点 = "+fs(Um)+"∠"+fAng(Ua)+"° V = "+fcx(Us)+" V。三个小题都用同一条分压公式：U 点 = [Zp / (Zs + Zp)] * Us 点。"];
+  var rows=[], maxRes=0, negAng=false, maxRatio=0;
+  parts.forEach(function(pt,idx){
+    var Zp=pt.Zp;
+    if(pt.n==="(c)"){
+      var prod=cmul(pt.Z1,pt.Z2), sum2=cadd(pt.Z1,pt.Z2);
+      Zp=cdiv(prod,sum2);
+      steps.push("(c) 先求并联支路阻抗：Zp = Z1 * Z2 / (Z1 + Z2)：Z1 * Z2 = "+cxSteps(pt.Z1)+" * "+cxSteps(pt.Z2)+" = "+fcx(prod)+"；Z1 + Z2 = "+fcx(sum2)+"；相除（乘共轭）：Zp = "+fcx(Zp)+" Ω");
+    }
+    var sum=cadd(pt.Zs,Zp);
+    var den=sum.r*sum.r+sum.i*sum.i;
+    var numC=cmul(Zp,CX(sum.r,-sum.i));
+    var ratio=CX(numC.r/den,numC.i/den);
+    var U=cmul(ratio,Us);
+    var pu=cpol(U); if(pu[1]<0) negAng=true; maxRatio=Math.max(maxRatio,pu[0]/Math.max(Um,1e-9));
+    var resid=csub(cmul(ratio,sum),Zp); maxRes=Math.max(maxRes,Math.abs(resid.r),Math.abs(resid.i));
+    steps.push(pt.n+" Zs + Zp = "+cxSteps(pt.Zs)+" + "+cxSteps(Zp)+" = "+fcx(sum)+" Ω");
+    steps.push("    分压比：Zp / (Zs + Zp) = "+cxSteps(Zp)+" / "+cxSteps(sum)+"：分子分母同乘分母共轭 ("+fs(sum.r)+" "+(sum.i<0?"+":"-")+" j"+fs(Math.abs(sum.i))+")，分子 = "+fcx(numC)+"，分母 = "+fs(sum.r)+"² + "+fs(sum.i)+"² = "+fs(den)+"，比值 = "+fcx(ratio));
+    steps.push("    U 点 = "+fcx(ratio)+" * "+fcx(Us)+" = "+fcx(U)+" V = "+fpolOf(U,"V"));
+    rows.push(["U 点 "+pt.n,fpolOf(U,"V")]);
+  });
+  steps.push("回代验算：每题的 [Zp / (Zs + Zp)] * (Zs + Zp) 都应还原为 Zp，最大残差 = "+fs(maxRes)+"（约等于 0）✓。");
+  (function(){
+    function gv9(id){ return gvRaw(id); }
+    var isP = Um===100&&Ua===0&&gv9("t319-a-sr")===5&&gv9("t319-a-si")===0&&gv9("t319-a-pr")===0&&gv9("t319-a-pi")===5&&gv9("t319-b-sr")===5&&gv9("t319-b-si")===0&&gv9("t319-b-pr")===5&&gv9("t319-b-pi")===-5&&gv9("t319-c-sr")===1&&gv9("t319-c-si")===0&&gv9("t319-c-1r")===0&&gv9("t319-c-1i")===-1&&gv9("t319-c-2r")===1&&gv9("t319-c-2i")===1;
+    if(isP) steps.push("附录对照：(a) 50√2∠45° V（50√2 = 70.7）、(b) 63.24∠-18.4° V、(c) 63.24∠-18.4° V；本程序按 3 位有效数字显示为 70.7∠45°、63.2∠-18.4°、63.2∠-18.4°。");
+  })();
+  var note=magNote(maxRatio<=3,"三个结果的模都不超过电源电压的 3 倍（分压一般不大于 Us，感容接近谐振时可以大于，本题不在谐振点）");
+  if(negAng) note+=signDiv("结果角度为负（如 -18.4°）：表示该电压相量滞后于电源电压 Us（以 Us 为参考），是容性支路的正常结果，不是算错。复数题最常见的错因是虚部符号，已记入错因时优先点「复数错」复盘。");
+  renderOut("t319-out",rows,steps,null,note);
+};
+TRAIN.rand.t319=function(){
+  ["t319-a-sr","t319-a-si","t319-a-pr","t319-a-pi","t319-b-sr","t319-b-si","t319-b-pr","t319-b-pi","t319-c-sr","t319-c-si","t319-c-1r","t319-c-1i","t319-c-2r","t319-c-2i"].forEach(function(id){
+    var v=gvRaw(id); if(!isNaN(v)&&v!==0) setV(id,String(Math.round(rScale(v,0.75,1.25)*10)/10));
+  });
+  var um=gvRaw("t319-Um"); if(!isNaN(um)) setV("t319-Um",nice3(rScale(um,0.8,1.2)));
+  TRAIN.calc.t319();
+};
+</script>
+<script>
+document.getElementById("dl-page").addEventListener("click",function(){
+  var clone=document.documentElement.cloneNode(true);
+  var outs=clone.querySelectorAll(".out");
+  for(var i=0;i<outs.length;i++){ outs[i].innerHTML=""; outs[i].classList.remove("on"); }
+  var fs=clone.querySelectorAll("fieldset.work");
+  for(var j=0;j<fs.length;j++){ fs[j].setAttribute("disabled",""); }
+  var gates=clone.querySelectorAll(".gate");
+  for(var g=0;g<gates.length;g++){ gates[g].classList.remove("passed"); }
+  var fbs=clone.querySelectorAll(".gatefb");
+  for(var f=0;f<fbs.length;f++){ fbs[f].textContent=""; fbs[f].classList.remove("on","ok","bad"); }
+  var note=clone.querySelector("#dl-note"); if(note) note.textContent="";
+  var html="<!doctype html>\n"+clone.outerHTML;
+  var blob=new Blob([html],{type:"text/html;charset=utf-8"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="电工电子陪练.html";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); },4000);
+  document.getElementById("dl-note").textContent="已生成文件「电工电子陪练.html」：把它发给同伴，并提醒对方先保存到本地、再用浏览器打开，不要在微信 / QQ 里直接点开预览。";
+});
+</script>
+</body>
+</html>
